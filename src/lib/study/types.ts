@@ -28,10 +28,14 @@ export function studyItems(chapter: Chapter, subject: "vocabulary" | "kanji"): S
   })));
   return examples.map((example) => {
     const sameSpelling = examples.filter((candidate) => candidate.japanese === example.japanese);
+    const answerPairs = Array.from(new Map(sameSpelling.map((candidate) => {
+      const pair = { acceptedReadings: candidate.acceptedReadings, meanings: candidate.meanings };
+      return [JSON.stringify(pair), pair] as const;
+    })).values());
     return {
       ...example,
-      ...(sameSpelling.length > 1 ? {
-        acceptedAnswerPairs: sameSpelling.map((candidate) => ({ acceptedReadings: candidate.acceptedReadings, meanings: candidate.meanings })),
+      ...(answerPairs.length > 1 ? {
+        acceptedAnswerPairs: answerPairs,
       } : {}),
     };
   });
