@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# Next.js and build output
+.next/
+out/
+build/
+dist/
+.vercel/
+.turbo/
+.swc/
+
+# Local package manager data
+.pnpm-store/
+
+# Environment files (keep the example template shareable)
+.env*
+!.env.example
+
+# Logs and local debug output
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# Tests and coverage artifacts
+/coverage/
+/playwright-report/
+/test-results/
+/blob-report/
+
+# TypeScript and tooling caches
+*.tsbuildinfo
+.eslintcache
+
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+.idea/

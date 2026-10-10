@@ -1,0 +1,217 @@
+{
+  "id": "01",
+  "title": "Chapter 01",
+  "titleJapanese": "自己紹介",
+  "description": "Introductions, countries, school, work, birthdays, hobbies, and 17 foundational kanji.",
+  "vocabulary": [
+    { "id": "v001", "japanese": "わたし", "reading": "わたし", "meanings": ["I", "Me"], "acceptedReadings": ["わたし"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v002", "japanese": "(お)なまえ", "reading": "おなまえ", "meanings": ["Name"], "acceptedReadings": ["なまえ", "おなまえ"], "category": "１ 私の名前・国・仕事", "notes": "The source marks お as optional." },
+    { "id": "v003", "japanese": "(お)くに", "reading": "おくに", "meanings": ["Country"], "acceptedReadings": ["くに", "おくに"], "category": "１ 私の名前・国・仕事", "notes": "The source marks お as optional." },
+    { "id": "v004", "japanese": "にほん", "reading": "にほん", "meanings": ["Japan"], "acceptedReadings": ["にほん"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v005", "japanese": "アメリカ", "reading": "あめりか", "meanings": ["America", "USA"], "acceptedReadings": ["あめりか"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v006", "japanese": "イタリア", "reading": "いたりあ", "meanings": ["Italy"], "acceptedReadings": ["いたりあ"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v007", "japanese": "オーストラリア", "reading": "おーすとらりあ", "meanings": ["Australia"], "acceptedReadings": ["おーすとらりあ"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v008", "japanese": "かんこく", "reading": "かんこく", "meanings": ["South Korea"], "acceptedReadings": ["かんこく"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v009", "japanese": "ブラジル", "reading": "ぶらじる", "meanings": ["Brazil"], "acceptedReadings": ["ぶらじる"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v010", "japanese": "タイ", "reading": "たい", "meanings": ["Thailand"], "acceptedReadings": ["たい"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v011", "japanese": "ちゅうごく", "reading": "ちゅうごく", "meanings": ["China"], "acceptedReadings": ["ちゅうごく"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v012", "japanese": "ロシア", "reading": "ろしあ", "meanings": ["Russia"], "acceptedReadings": ["ろしあ"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v013", "japanese": "こうこう", "reading": "こうこう", "meanings": ["High school"], "acceptedReadings": ["こうこう"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v014", "japanese": "だいがく", "reading": "だいがく", "meanings": ["University"], "acceptedReadings": ["だいがく"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v015", "japanese": "にほんごがっこう", "reading": "にほんごがっこう", "meanings": ["Japanese language school"], "acceptedReadings": ["にほんごがっこう"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v016", "japanese": "(お)しごと", "reading": "おしごと", "meanings": ["Job", "Occupation"], "acceptedReadings": ["しごと", "おしごと"], "category": "１ 私の名前・国・仕事", "notes": "The source marks お as optional." },
+    { "id": "v017", "japanese": "がくせい", "reading": "がくせい", "meanings": ["Student"], "acceptedReadings": ["がくせい"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v018", "japanese": "せんせい", "reading": "せんせい", "meanings": ["Teacher (title / honorific)"], "acceptedReadings": ["せんせい"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v019", "japanese": "きょうし", "reading": "きょうし", "meanings": ["Teacher (profession)"], "acceptedReadings": ["きょうし"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v020", "japanese": "かいしゃいん", "reading": "かいしゃいん", "meanings": ["Office worker", "Company employee"], "acceptedReadings": ["かいしゃいん"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v021", "japanese": "しゃいん", "reading": "しゃいん", "meanings": ["Employee (of a specific company)"], "acceptedReadings": ["しゃいん"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v022", "japanese": "〜さん", "reading": "さん", "meanings": ["Mr.", "Ms. (honorific title)"], "acceptedReadings": ["さん"], "category": "１ 私の名前・国・仕事", "notes": "Suffix; replace 〜 with a name." },
+    { "id": "v023", "japanese": "〜じん", "reading": "じん", "meanings": ["Person of"], "acceptedReadings": ["じん"], "category": "１ 私の名前・国・仕事", "notes": "Suffix used for nationality; replace 〜 with a country." },
+    { "id": "v024", "japanese": "どちら", "reading": "どちら", "meanings": ["Where", "Which way (formal)"], "acceptedReadings": ["どちら"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v025", "japanese": "はじめまして", "reading": "はじめまして", "meanings": ["Nice to meet you (when meeting for the first time)"], "acceptedReadings": ["はじめまして"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v026", "japanese": "(どうぞ)よろしくおねがいします", "reading": "よろしくおねがいします", "meanings": ["Please treat me well", "Nice to meet you"], "acceptedReadings": ["よろしくおねがいします", "どうぞよろしくおねがいします"], "category": "１ 私の名前・国・仕事", "notes": "The source marks どうぞ as optional." },
+    { "id": "v027", "japanese": "こちらこそ", "reading": "こちらこそ", "meanings": ["Likewise"], "acceptedReadings": ["こちらこそ"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v028", "japanese": "あのう", "reading": "あのう", "meanings": ["Um...", "Well..."], "acceptedReadings": ["あのう"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v029", "japanese": "すみません", "reading": "すみません", "meanings": ["Excuse me", "I'm sorry"], "acceptedReadings": ["すみません"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v030", "japanese": "そうですか", "reading": "そうですか", "meanings": ["I see", "Is that so?"], "acceptedReadings": ["そうですか"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v031", "japanese": "はい", "reading": "はい", "meanings": ["Yes"], "acceptedReadings": ["はい"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v032", "japanese": "いいえ", "reading": "いいえ", "meanings": ["No"], "acceptedReadings": ["いいえ"], "category": "１ 私の名前・国・仕事" },
+    { "id": "v033", "japanese": "たんじょうび", "reading": "たんじょうび", "meanings": ["Birthday"], "acceptedReadings": ["たんじょうび"], "category": "２ 私の誕生日" },
+    { "id": "v034", "japanese": "〜がつ", "reading": "がつ", "meanings": ["Month"], "acceptedReadings": ["がつ"], "category": "２ 私の誕生日", "notes": "Month suffix; replace 〜 with a number." },
+    { "id": "v035", "japanese": "〜にち", "reading": "にち", "meanings": ["Day"], "acceptedReadings": ["にち"], "category": "２ 私の誕生日", "notes": "Day suffix; replace 〜 with a number. Some dates have irregular readings." },
+    { "id": "v036", "japanese": "〜さい", "reading": "さい", "meanings": ["Age", "... years old"], "acceptedReadings": ["さい"], "category": "２ 私の誕生日", "notes": "Age suffix; replace 〜 with a number." },
+    { "id": "v037", "japanese": "いつ", "reading": "いつ", "meanings": ["When"], "acceptedReadings": ["いつ"], "category": "２ 私の誕生日" },
+    { "id": "v038", "japanese": "しゅみ", "reading": "しゅみ", "meanings": ["Hobby"], "acceptedReadings": ["しゅみ"], "category": "３ 私の趣味" },
+    { "id": "v039", "japanese": "スポーツ", "reading": "すぽーつ", "meanings": ["Sport", "Sports"], "acceptedReadings": ["すぽーつ"], "category": "３ 私の趣味" },
+    { "id": "v040", "japanese": "サッカー", "reading": "さっかー", "meanings": ["Soccer"], "acceptedReadings": ["さっかー"], "category": "３ 私の趣味" },
+    { "id": "v041", "japanese": "テニス", "reading": "てにす", "meanings": ["Tennis"], "acceptedReadings": ["てにす"], "category": "３ 私の趣味" },
+    { "id": "v042", "japanese": "すいえい", "reading": "すいえい", "meanings": ["Swimming"], "acceptedReadings": ["すいえい"], "category": "３ 私の趣味" },
+    { "id": "v043", "japanese": "えいが", "reading": "えいが", "meanings": ["Movie", "Film"], "acceptedReadings": ["えいが"], "category": "３ 私の趣味" },
+    { "id": "v044", "japanese": "おんがく", "reading": "おんがく", "meanings": ["Music"], "acceptedReadings": ["おんがく"], "category": "３ 私の趣味" },
+    { "id": "v045", "japanese": "どくしょ", "reading": "どくしょ", "meanings": ["Reading books"], "acceptedReadings": ["どくしょ"], "category": "３ 私の趣味" },
+    { "id": "v046", "japanese": "りょこう", "reading": "りょこう", "meanings": ["Travel", "Traveling"], "acceptedReadings": ["りょこう"], "category": "３ 私の趣味" },
+    { "id": "v047", "japanese": "りょうり", "reading": "りょうり", "meanings": ["Cooking"], "acceptedReadings": ["りょうり"], "category": "３ 私の趣味" },
+    { "id": "v048", "japanese": "なに", "reading": "なに", "meanings": ["What"], "acceptedReadings": ["なに"], "category": "３ 私の趣味" },
+    { "id": "v049", "japanese": "あ(っ)", "reading": "あ", "meanings": ["Ah!", "Oh! (expressing surprise)"], "acceptedReadings": ["あ", "あっ"], "category": "３ 私の趣味", "notes": "The source gives both あ and あっ." }
+  ],
+  "kanji": [
+    {
+      "id": "k001", "character": "一", "meanings": ["One"], "strokeCount": 1, "onyomi": ["いち"], "kunyomi": ["ひと"], "notes": "一人 is read ひとり. 一日 has two readings: ついたち for the first day of the month and いちにち for one day.",
+      "examples": [
+        { "id": "k001-e001", "japanese": "一つ", "reading": "ひとつ", "meanings": ["One thing"], "acceptedReadings": ["ひとつ"] },
+        { "id": "k001-e002", "japanese": "一人", "reading": "ひとり", "meanings": ["One person"], "acceptedReadings": ["ひとり"] },
+        { "id": "k001-e003", "japanese": "一日", "reading": "ついたち", "meanings": ["First day of the month"], "acceptedReadings": ["ついたち"] },
+        { "id": "k001-e004", "japanese": "一日", "reading": "いちにち", "meanings": ["One day"], "acceptedReadings": ["いちにち"] },
+        { "id": "k001-e005", "japanese": "一緒に", "reading": "いっしょに", "meanings": ["Together"], "acceptedReadings": ["いっしょに"] }
+      ]
+    },
+    {
+      "id": "k002", "character": "二", "meanings": ["Two"], "strokeCount": 2, "onyomi": ["に"], "kunyomi": ["ふた"], "notes": "二人 is read ふたり. 二日 is read ふつか.",
+      "examples": [
+        { "id": "k002-e001", "japanese": "二つ", "reading": "ふたつ", "meanings": ["Two things"], "acceptedReadings": ["ふたつ"] },
+        { "id": "k002-e002", "japanese": "二人", "reading": "ふたり", "meanings": ["Two people"], "acceptedReadings": ["ふたり"] },
+        { "id": "k002-e003", "japanese": "二日", "reading": "ふつか", "meanings": ["Two days", "Second day of the month"], "acceptedReadings": ["ふつか"] },
+        { "id": "k002-e004", "japanese": "二月", "reading": "にがつ", "meanings": ["February"], "acceptedReadings": ["にがつ"] }
+      ]
+    },
+    {
+      "id": "k003", "character": "三", "meanings": ["Three"], "strokeCount": 3, "onyomi": ["さん"], "kunyomi": ["み"], "notes": "三つ and 三日 have sound changes in their readings.",
+      "examples": [
+        { "id": "k003-e001", "japanese": "三つ", "reading": "みっつ", "meanings": ["Three things"], "acceptedReadings": ["みっつ"] },
+        { "id": "k003-e002", "japanese": "三日", "reading": "みっか", "meanings": ["Three days", "Third day of the month"], "acceptedReadings": ["みっか"] },
+        { "id": "k003-e003", "japanese": "三月", "reading": "さんがつ", "meanings": ["March"], "acceptedReadings": ["さんがつ"] },
+        { "id": "k003-e004", "japanese": "三年", "reading": "さんねん", "meanings": ["Three years"], "acceptedReadings": ["さんねん"] }
+      ]
+    },
+    {
+      "id": "k004", "character": "山", "meanings": ["Mountain"], "strokeCount": 3, "onyomi": ["さん"], "kunyomi": ["やま"], "notes": "山川 and 山田 are surname examples.",
+      "examples": [
+        { "id": "k004-e001", "japanese": "山", "reading": "やま", "meanings": ["Mountain"], "acceptedReadings": ["やま"] },
+        { "id": "k004-e002", "japanese": "山川さん", "reading": "やまかわさん", "meanings": ["Mr./Ms. Yamakawa"], "acceptedReadings": ["やまかわさん"] },
+        { "id": "k004-e003", "japanese": "山田さん", "reading": "やまださん", "meanings": ["Mr./Ms. Yamada"], "acceptedReadings": ["やまださん"] },
+        { "id": "k004-e004", "japanese": "富士山", "reading": "ふじさん", "meanings": ["Mount Fuji"], "acceptedReadings": ["ふじさん"] }
+      ]
+    },
+    {
+      "id": "k005", "character": "川", "meanings": ["River"], "strokeCount": 3, "onyomi": ["せん"], "kunyomi": ["かわ", "がわ"],
+      "examples": [
+        { "id": "k005-e001", "japanese": "川", "reading": "かわ", "meanings": ["River"], "acceptedReadings": ["かわ"] },
+        { "id": "k005-e002", "japanese": "川口さん", "reading": "かわぐちさん", "meanings": ["Mr./Ms. Kawaguchi"], "acceptedReadings": ["かわぐちさん"] },
+        { "id": "k005-e003", "japanese": "ナイル川", "reading": "ナイルがわ", "meanings": ["Nile River"], "acceptedReadings": ["ナイルがわ", "ないるがわ"] }
+      ]
+    },
+    {
+      "id": "k006", "character": "目", "meanings": ["Eye"], "strokeCount": 5, "onyomi": ["もく"], "kunyomi": ["め"],
+      "examples": [
+        { "id": "k006-e001", "japanese": "目", "reading": "め", "meanings": ["Eye"], "acceptedReadings": ["め"] },
+        { "id": "k006-e002", "japanese": "一つ目", "reading": "ひとつめ", "meanings": ["The first one"], "acceptedReadings": ["ひとつめ"] },
+        { "id": "k006-e003", "japanese": "目上", "reading": "めうえ", "meanings": ["Superior", "Person of higher status"], "acceptedReadings": ["めうえ"] },
+        { "id": "k006-e004", "japanese": "目下", "reading": "めした", "meanings": ["Inferior", "Person of lower status"], "acceptedReadings": ["めした"] },
+        { "id": "k006-e005", "japanese": "目的", "reading": "もくてき", "meanings": ["Purpose", "Objective"], "acceptedReadings": ["もくてき"] }
+      ]
+    },
+    {
+      "id": "k007", "character": "口", "meanings": ["Mouth"], "strokeCount": 3, "onyomi": ["こう"], "kunyomi": ["くち", "ぐち"],
+      "examples": [
+        { "id": "k007-e001", "japanese": "口", "reading": "くち", "meanings": ["Mouth"], "acceptedReadings": ["くち"] },
+        { "id": "k007-e002", "japanese": "入口", "reading": "いりぐち", "meanings": ["Entrance"], "acceptedReadings": ["いりぐち"] },
+        { "id": "k007-e003", "japanese": "出口", "reading": "でぐち", "meanings": ["Exit"], "acceptedReadings": ["でぐち"] },
+        { "id": "k007-e004", "japanese": "東口", "reading": "ひがしぐち", "meanings": ["East exit"], "acceptedReadings": ["ひがしぐち"] },
+        { "id": "k007-e005", "japanese": "人口", "reading": "じんこう", "meanings": ["Population"], "acceptedReadings": ["じんこう"] }
+      ]
+    },
+    {
+      "id": "k008", "character": "人", "meanings": ["Person"], "strokeCount": 2, "onyomi": ["にん", "じん"], "kunyomi": ["ひと"], "notes": "一人 and 二人 have special readings ひとり and ふたり. 大人 is read おとな.",
+      "examples": [
+        { "id": "k008-e001", "japanese": "人", "reading": "ひと", "meanings": ["Person", "People"], "acceptedReadings": ["ひと"] },
+        { "id": "k008-e002", "japanese": "一人", "reading": "ひとり", "meanings": ["One person"], "acceptedReadings": ["ひとり"] },
+        { "id": "k008-e003", "japanese": "三人", "reading": "さんにん", "meanings": ["Three people"], "acceptedReadings": ["さんにん"] },
+        { "id": "k008-e004", "japanese": "人形", "reading": "にんぎょう", "meanings": ["Doll"], "acceptedReadings": ["にんぎょう"] },
+        { "id": "k008-e005", "japanese": "イギリス人", "reading": "イギリスじん", "meanings": ["British person"], "acceptedReadings": ["イギリスじん", "いぎりすじん"] },
+        { "id": "k008-e006", "japanese": "大人", "reading": "おとな", "meanings": ["Adult"], "acceptedReadings": ["おとな"] }
+      ]
+    },
+    {
+      "id": "k009", "character": "木", "meanings": ["Tree", "Wood"], "strokeCount": 4, "onyomi": ["もく"], "kunyomi": ["き"],
+      "examples": [
+        { "id": "k009-e001", "japanese": "木", "reading": "き", "meanings": ["Tree", "Wood"], "acceptedReadings": ["き"] },
+        { "id": "k009-e002", "japanese": "木曜日", "reading": "もくようび", "meanings": ["Thursday"], "acceptedReadings": ["もくようび"] },
+        { "id": "k009-e003", "japanese": "木綿", "reading": "もめん", "meanings": ["Cotton"], "acceptedReadings": ["もめん"] }
+      ]
+    },
+    {
+      "id": "k010", "character": "休", "meanings": ["Rest"], "strokeCount": 6, "onyomi": ["きゅう"], "kunyomi": ["やすむ", "やすみ"],
+      "examples": [
+        { "id": "k010-e001", "japanese": "休み", "reading": "やすみ", "meanings": ["Rest", "Day off"], "acceptedReadings": ["やすみ"] },
+        { "id": "k010-e002", "japanese": "休む", "reading": "やすむ", "meanings": ["To rest", "To be absent"], "acceptedReadings": ["やすむ"] },
+        { "id": "k010-e003", "japanese": "休日", "reading": "きゅうじつ", "meanings": ["Holiday", "Day off"], "acceptedReadings": ["きゅうじつ"] },
+        { "id": "k010-e004", "japanese": "有休", "reading": "ゆうきゅう", "meanings": ["Paid leave"], "acceptedReadings": ["ゆうきゅう"] },
+        { "id": "k010-e005", "japanese": "定休日", "reading": "ていきゅうび", "meanings": ["Regular closing day"], "acceptedReadings": ["ていきゅうび"] }
+      ]
+    },
+    {
+      "id": "k011", "character": "本", "meanings": ["Book", "Origin"], "strokeCount": 5, "onyomi": ["ほん"], "kunyomi": ["もと"], "notes": "日本 has two readings: にほん and にっぽん.",
+      "examples": [
+        { "id": "k011-e001", "japanese": "本", "reading": "ほん", "meanings": ["Book"], "acceptedReadings": ["ほん"] },
+        { "id": "k011-e002", "japanese": "山本さん", "reading": "やまもとさん", "meanings": ["Mr./Ms. Yamamoto"], "acceptedReadings": ["やまもとさん"] },
+        { "id": "k011-e003", "japanese": "本当", "reading": "ほんとう", "meanings": ["True", "Real"], "acceptedReadings": ["ほんとう"] },
+        { "id": "k011-e004", "japanese": "本棚", "reading": "ほんだな", "meanings": ["Bookshelf"], "acceptedReadings": ["ほんだな"] },
+        { "id": "k011-e005", "japanese": "日本", "reading": "にほん", "meanings": ["Japan"], "acceptedReadings": ["にほん"] },
+        { "id": "k011-e006", "japanese": "日本", "reading": "にっぽん", "meanings": ["Japan"], "acceptedReadings": ["にっぽん"] }
+      ]
+    },
+    {
+      "id": "k012", "character": "体", "meanings": ["Body"], "strokeCount": 7, "onyomi": ["たい"], "kunyomi": ["からだ"],
+      "examples": [
+        { "id": "k012-e001", "japanese": "体", "reading": "からだ", "meanings": ["Body"], "acceptedReadings": ["からだ"] },
+        { "id": "k012-e002", "japanese": "体力", "reading": "たいりょく", "meanings": ["Physical strength", "Stamina"], "acceptedReadings": ["たいりょく"] }
+      ]
+    },
+    {
+      "id": "k013", "character": "田", "meanings": ["Rice field"], "strokeCount": 5, "onyomi": ["でん"], "kunyomi": ["た", "だ"], "notes": "田舎 is read いなか.",
+      "examples": [
+        { "id": "k013-e001", "japanese": "田んぼ", "reading": "たんぼ", "meanings": ["Rice field"], "acceptedReadings": ["たんぼ"] },
+        { "id": "k013-e002", "japanese": "山田さん", "reading": "やまださん", "meanings": ["Mr./Ms. Yamada"], "acceptedReadings": ["やまださん"] },
+        { "id": "k013-e003", "japanese": "田中さん", "reading": "たなかさん", "meanings": ["Mr./Ms. Tanaka"], "acceptedReadings": ["たなかさん"] },
+        { "id": "k013-e004", "japanese": "田舎", "reading": "いなか", "meanings": ["Countryside", "Hometown"], "acceptedReadings": ["いなか"] }
+      ]
+    },
+    {
+      "id": "k014", "character": "力", "meanings": ["Power", "Strength"], "strokeCount": 2, "onyomi": ["りょく"], "kunyomi": ["ちから"],
+      "examples": [
+        { "id": "k014-e001", "japanese": "力", "reading": "ちから", "meanings": ["Power", "Strength"], "acceptedReadings": ["ちから"] },
+        { "id": "k014-e002", "japanese": "体力", "reading": "たいりょく", "meanings": ["Physical strength", "Stamina"], "acceptedReadings": ["たいりょく"] }
+      ]
+    },
+    {
+      "id": "k015", "character": "男", "meanings": ["Man", "Male"], "strokeCount": 7, "onyomi": ["だん"], "kunyomi": ["おとこ"],
+      "examples": [
+        { "id": "k015-e001", "japanese": "男", "reading": "おとこ", "meanings": ["Man", "Male"], "acceptedReadings": ["おとこ"] },
+        { "id": "k015-e002", "japanese": "男の子", "reading": "おとこのこ", "meanings": ["Boy"], "acceptedReadings": ["おとこのこ"] },
+        { "id": "k015-e003", "japanese": "男の人", "reading": "おとこのひと", "meanings": ["Man"], "acceptedReadings": ["おとこのひと"] },
+        { "id": "k015-e004", "japanese": "男性", "reading": "だんせい", "meanings": ["Male", "Man"], "acceptedReadings": ["だんせい"] },
+        { "id": "k015-e005", "japanese": "長男", "reading": "ちょうなん", "meanings": ["Eldest son"], "acceptedReadings": ["ちょうなん"] }
+      ]
+    },
+    {
+      "id": "k016", "character": "女", "meanings": ["Woman", "Female"], "strokeCount": 3, "onyomi": ["じょ"], "kunyomi": ["おんな"],
+      "examples": [
+        { "id": "k016-e001", "japanese": "女", "reading": "おんな", "meanings": ["Woman", "Female"], "acceptedReadings": ["おんな"] },
+        { "id": "k016-e002", "japanese": "女の子", "reading": "おんなのこ", "meanings": ["Girl"], "acceptedReadings": ["おんなのこ"] },
+        { "id": "k016-e003", "japanese": "彼女", "reading": "かのじょ", "meanings": ["She", "Girlfriend"], "acceptedReadings": ["かのじょ"] },
+        { "id": "k016-e004", "japanese": "女性", "reading": "じょせい", "meanings": ["Female", "Woman"], "acceptedReadings": ["じょせい"] },
+        { "id": "k016-e005", "japanese": "女房", "reading": "にょうぼう", "meanings": ["Wife"], "acceptedReadings": ["にょうぼう"] }
+      ]
+    },
+    {
+      "id": "k017", "character": "安", "meanings": ["Cheap", "Safe", "Peaceful"], "strokeCount": 6, "onyomi": ["あん"], "kunyomi": ["やすい"],
+      "examples": [
+        { "id": "k017-e001", "japanese": "安い", "reading": "やすい", "meanings": ["Cheap", "Inexpensive"], "acceptedReadings": ["やすい"] },
+        { "id": "k017-e002", "japanese": "円安", "reading": "えんやす", "meanings": ["Yen depreciation"], "acceptedReadings": ["えんやす"] },
+        { "id": "k017-e003", "japanese": "安全な", "reading": "あんぜんな", "meanings": ["Safe"], "acceptedReadings": ["あんぜんな"] },
+        { "id": "k017-e004", "japanese": "安心する", "reading": "あんしんする", "meanings": ["To feel relieved", "To feel at ease"], "acceptedReadings": ["あんしんする"] },
+        { "id": "k017-e005", "japanese": "不安な", "reading": "ふあんな", "meanings": ["Anxious", "Uneasy"], "acceptedReadings": ["ふあんな"] }
+      ]
+    }
+  ]
+}
