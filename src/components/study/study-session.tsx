@@ -4,12 +4,34 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight, RotateCcw, Shuffle, Volume2 } from "lucide-react";
-import { matchesKanjiAnswer, matchesMeaning, matchesReading, romaji } from "@/lib/japanese";
+import { matchesKanjiAnswer, matchesMeaning, matchesReading, normalizeReading, romaji } from "@/lib/japanese";
 import { playUiSound } from "@/lib/ui-sound";
 import { loadProgress, recordAnswer, setDifficult, type ProgressStore } from "@/lib/storage/progress";
 import type { StudyItem } from "@/lib/study/types";
 
 type Mode = "learn" | "flashcards" | "quiz";
+function expandVocabularyAlternatives(items: StudyItem[]) {
+  return items.flatMap((item) => {
+    const forms = item.japanese.split(/\s*\/\s*/).map((form) => form.trim()).filter(Boolean);
+    if (forms.length < 2) return [item];
+    return forms.map((japanese, index) => {
+      const pairedReadings = item.acceptedReadings.length === forms.length;
+      const pairedMeanings = item.meanings.length === forms.length;
+      const reading = pairedReadings ? item.acceptedReadings[index] : item.reading;
+      const pairedAcceptedMeanings = (item.acceptedMeanings?.length ?? 0) === forms.length;
+      return {
+        ...item,
+        key: `${item.key}:form-${index + 1}`,
+        japanese,
+        reading,
+        acceptedReadings: pairedReadings ? [reading] : item.acceptedReadings,
+        meanings: pairedMeanings ? [item.meanings[index]] : item.meanings,
+        acceptedMeanings: pairedAcceptedMeanings ? [item.acceptedMeanings![index]] : item.acceptedMeanings,
+      };
+    });
+  });
+}
+
 function smartShuffleItems(items: StudyItem[], progress: ProgressStore) {
   const now = Date.now();
   return items
@@ -47,6 +69,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   const activeDirection = flashDirection === "mixed" ? ((index % 2 === 0) ? "primary" : (subject === "vocabulary" ? "reverse" : "meaning")) : flashDirection;
   const focusMode = mode !== "learn";
   const subjectPath = `/chapter/${chapterId}/${subject}`;
+  const quizSourceItems = useMemo(() => mode === "quiz" && subject === "vocabulary" ? expandVocabularyAlternatives(initialItems) : initialItems, [initialItems, mode, subject]);
 
   const toggleSmartShuffle = () => {
     if (checked !== null) return;
@@ -79,10 +102,11 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
       if (review === "due") selectedItems = initialItems.filter((item) => { const due = saved.cards[item.key]?.nextReview; return due && new Date(due) <= new Date(); });
       else if (review === "mistakes") selectedItems = initialItems.filter((item) => { const card = saved.cards[item.key]; return card && (card.incorrect > card.correct || card.difficult); });
       else if (category) selectedItems = initialItems.filter((item) => item.category === category);
+      if (mode === "quiz" && subject === "vocabulary") selectedItems = expandVocabularyAlternatives(selectedItems);
       setItems(mode === "quiz" ? smartShuffleItems(selectedItems, saved) : selectedItems);
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [initialItems, mode]);
+  }, [initialItems, mode, subject]);
   useEffect(() => { if (mode === "quiz" && checked === null && !finished) inputRef.current?.focus(); }, [index, mode, checked, finished]);
   const next = useCallback(() => {
     if (index >= items.length - 1) setFinished(true);
@@ -108,8 +132,8 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   const emptyResults = () => ({ correct: 0, incorrect: 0, skipped: 0, mistakes: [] as StudyItem[], difficult: [] as StudyItem[] });
   const shuffle = () => { setItems((value) => [...value].sort(() => Math.random() - 0.5)); setIndex(0); setFinished(false); setResults(emptyResults()); setRevealed(false); setChecked(null); setAnswer(""); setMeaningAnswer(""); };
   const restart = () => {
-    smartOriginalRemaining.current = smartShuffle ? initialItems : null;
-    setItems(smartShuffle ? smartShuffleItems(initialItems, progress) : initialItems);
+    smartOriginalRemaining.current = smartShuffle ? quizSourceItems : null;
+    setItems(smartShuffle ? smartShuffleItems(quizSourceItems, progress) : quizSourceItems);
     setIndex(0); setFinished(false); setResults(emptyResults()); setChecked(null); setAnswer(""); setMeaningAnswer(""); setRevealed(false);
   };
   const mark = (correct: boolean, difficult = false) => {
@@ -122,7 +146,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   const submit = () => {
     if (!current || checked !== null) return;
     const correct = vocabularyQuiz
-      ? matchesMeaning(answer, current.meanings)
+      ? matchesMeaning(answer, current.meanings, current.acceptedMeanings)
       : matchesKanjiAnswer(answer, meaningAnswer, current);
     playUiSound(correct ? "correct" : "incorrect");
     setChecked(correct);
@@ -147,7 +171,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
       <div className={`session-progress ${mode === "quiz" ? "with-smart-shuffle" : ""}`}><span>{String(index + 1).padStart(2, "0")} <i>/</i> {String(items.length).padStart(2, "0")}</span><div><i style={{ width: `${((index + 1) / items.length) * 100}%` }} /></div>{mode === "quiz" && <button type="button" className={`smart-shuffle-toggle ${smartShuffle ? "is-active" : ""}`} aria-pressed={smartShuffle} title="Prioritize missed and difficult cards; shuffle ties." disabled={checked !== null} onClick={toggleSmartShuffle}><Shuffle size={12} /> SMART {smartShuffle ? "ON" : "OFF"}</button>}<button onClick={skip}>Skip <ArrowRight size={13} /></button></div>
       <div className="study-card-stage" key={current?.key}>
         <div className="study-context">{current?.kanji && <span className="kanji-chip">KANJI {current.kanji}</span>}<span>{current?.category ?? (current?.kanji ? `${current.strokeCount} STROKES` : "CHAPTER WORD")}</span><button className="audio-button" onClick={speak} aria-label="Play Japanese pronunciation"><Volume2 size={16} /></button></div>
-        <div className="study-prompt"><span className={`prompt-japanese ${mode === "flashcards" && activeDirection === "reverse" ? "prompt-english" : ""} ${kanjiInVocabulary ? "vocab-hover-target" : ""}`} tabIndex={kanjiInVocabulary ? 0 : undefined}>{mode === "flashcards" && activeDirection === "reverse" ? current?.meanings.join(" · ") : current?.japanese}{kanjiInVocabulary && <span className="vocab-hover-card" role="tooltip"><span>{current?.reading}</span><span>{current?.meanings.join(" · ")}</span></span>}</span>{mode === "quiz" ? <span className="prompt-meaning">{vocabularyQuiz ? "TYPE THE ENGLISH MEANING" : "TYPE THE READING + ENGLISH MEANING"}</span> : (mode !== "flashcards" || (Boolean(current?.kanji) && activeDirection !== "meaning") || activeDirection === "reverse") && <span className="prompt-meaning">{mode === "flashcards" && activeDirection === "reverse" ? "FIND THE JAPANESE" : current?.meanings.join(" · ")}</span>}</div>
+        <div className="study-prompt"><span className={`prompt-japanese ${mode === "flashcards" && activeDirection === "reverse" ? "prompt-english" : ""} ${kanjiInVocabulary ? "vocab-hover-target" : ""}`} tabIndex={kanjiInVocabulary ? 0 : undefined}>{mode === "flashcards" && activeDirection === "reverse" ? current?.meanings.join(" · ") : current?.japanese}{kanjiInVocabulary && <span className="vocab-hover-card" role="tooltip"><span>{normalizeReading(current?.reading ?? "")}</span></span>}</span>{mode === "quiz" ? <span className="prompt-meaning">{vocabularyQuiz ? "TYPE THE ENGLISH MEANING" : "TYPE THE READING + ENGLISH MEANING"}</span> : (mode !== "flashcards" || (Boolean(current?.kanji) && activeDirection !== "meaning") || activeDirection === "reverse") && <span className="prompt-meaning">{mode === "flashcards" && activeDirection === "reverse" ? "FIND THE JAPANESE" : current?.meanings.join(" · ")}</span>}</div>
         {mode === "flashcards" ? <div className={`flash-reveal ${revealed ? "is-revealed" : ""}`}>
           {revealed ? <><span className="answer-reading">{activeDirection === "reverse" ? current?.japanese : activeDirection === "meaning" ? current?.meanings.join(" · ") : current?.reading}</span><span className="answer-romaji">{activeDirection === "reverse" ? current?.reading : romaji(current?.reading ?? "")}</span>{activeDirection !== "meaning" && <span className="answer-meaning">{current?.meanings.join(" · ")}</span>}<div className="answer-actions"><button className="answer-wrong" onClick={() => mark(false)}>Again</button><button className="difficult-button" onClick={() => { setDifficult(current.key, true); mark(false, true); }}>Difficult</button><button className="answer-correct" onClick={() => mark(true)}>I knew it <Check size={15} /></button></div></> : <button className="reveal-button" onClick={() => setRevealed(true)}>Reveal answer <span>SPACE</span></button>}
         </div> : <div className="quiz-answer-area">
@@ -157,12 +181,12 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
               <input ref={inputRef} id="reading-answer" aria-label={vocabularyQuiz ? "English meaning" : "Hiragana reading; Romaji accepted"} autoComplete="off" autoCapitalize="off" spellCheck={vocabularyQuiz} lang={vocabularyQuiz ? "en" : "ja"} inputMode="text" placeholder={vocabularyQuiz ? "Type the meaning…" : "Type Hiragana or Romaji…"} value={answer} onChange={(event) => setAnswer(event.target.value)} onCompositionStart={() => { composingRef.current = true; }} onCompositionEnd={() => { composingRef.current = false; }} disabled={checked !== null} />
               <span>↵</span>
             </div>
-            {!vocabularyQuiz && <div className={`answer-input-wrap meaning-answer-wrap ${checked === null ? "" : current?.acceptedAnswerPairs ? checked ? "input-correct" : "input-wrong" : matchesMeaning(meaningAnswer, current?.meanings ?? []) ? "input-correct" : "input-wrong"}`}>
+            {!vocabularyQuiz && <div className={`answer-input-wrap meaning-answer-wrap ${checked === null ? "" : current?.acceptedAnswerPairs ? checked ? "input-correct" : "input-wrong" : matchesMeaning(meaningAnswer, current?.meanings ?? [], current?.acceptedMeanings) ? "input-correct" : "input-wrong"}`}>
               <input id="meaning-answer" aria-label="English meaning (Kotoba IME: Alphanumeric)" autoComplete="off" autoCapitalize="off" spellCheck lang="en" inputMode="text" placeholder="Type the English meaning…" value={meaningAnswer} onChange={(event) => setMeaningAnswer(event.target.value)} disabled={checked !== null} />
             </div>}
             {checked === null ? <button type="submit" className="button button-dark check-button" disabled={!answer.trim() || (!vocabularyQuiz && !meaningAnswer.trim())}>Check answer <ArrowRight size={15} /></button> : <div className={`quiz-feedback ${checked ? "feedback-correct" : "feedback-wrong"}`}><div><strong>{checked ? "Correct." : "Not quite."}</strong><span>{vocabularyQuiz ? current?.meanings.join(" · ") : current?.acceptedAnswerPairs ? current.acceptedAnswerPairs.map((pair) => `${pair.acceptedReadings.join(" / ")} (${pair.acceptedReadings.map(romaji).join(" / ")}) — ${pair.meanings.join(" / ")}`).join(" · ") : <>{current?.reading} <i>·</i> {romaji(current?.reading ?? "")} <i>·</i> {current?.meanings.join(" · ")}</>}</span></div><button type="button" className="flag-difficult" onClick={flagDifficult}>{results.difficult.some((item) => item.key === current?.key) ? "Marked difficult" : "Mark difficult"}</button><button type="button" onClick={next}>Continue <ArrowRight size={15} /></button></div>}
           </form>
-          <p className="answer-hint">{vocabularyQuiz ? "Enter one of the English meanings. Hover or focus kanji words to reveal their reading and meaning." : "Enter the reading in Hiragana or Romaji, plus one of the English meanings. Katakana is accepted too."}</p>
+          <p className="answer-hint">{vocabularyQuiz ? "Enter the English meaning. Hover or focus kanji words to reveal their Hiragana reading." : "Enter the reading in Hiragana or Romaji, plus one of the English meanings. Katakana is accepted too."}</p>
         </div>}
         {current?.notes && <p className="study-note">NOTE <span>{current.notes}</span></p>}
       </div>

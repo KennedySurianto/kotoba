@@ -87,7 +87,7 @@
       "id": "k004", "character": "山", "meanings": ["Mountain"], "strokeCount": 3, "onyomi": ["さん"], "kunyomi": ["やま"], "notes": "山川 and 山田 are surname examples.",
       "examples": [
         { "id": "k004-e001", "japanese": "山", "reading": "やま", "meanings": ["Mountain"], "acceptedReadings": ["やま"] },
-        { "id": "k004-e002", "japanese": "山川さん", "reading": "やまかわさん", "meanings": ["Mr./Ms. Yamakawa"], "acceptedReadings": ["やまかわさん"] },
+        { "id": "k004-e002", "japanese": "山川さん", "reading": "やまかわさん", "meanings": ["Mr./Ms. Yamakawa"], "acceptedMeanings": ["Yamakawa-san", "Mr. Yamakawa", "Ms. Yamakawa", "Yamakawa"], "acceptedReadings": ["やまかわさん"] },
         { "id": "k004-e003", "japanese": "山田さん", "reading": "やまださん", "meanings": ["Mr./Ms. Yamada"], "acceptedReadings": ["やまださん"] },
         { "id": "k004-e004", "japanese": "富士山", "reading": "ふじさん", "meanings": ["Mount Fuji"], "acceptedReadings": ["ふじさん"] }
       ]

@@ -5,8 +5,9 @@ export type StudyItem = {
   japanese: string;
   reading: string;
   acceptedReadings: string[];
-  acceptedAnswerPairs?: { acceptedReadings: string[]; meanings: string[] }[];
+  acceptedAnswerPairs?: { acceptedReadings: string[]; meanings: string[]; acceptedMeanings?: string[] }[];
   meanings: string[];
+  acceptedMeanings?: string[];
   category?: string;
   notes?: string;
   kanji?: string;
@@ -29,7 +30,7 @@ export function studyItems(chapter: Chapter, subject: "vocabulary" | "kanji"): S
   return examples.map((example) => {
     const sameSpelling = examples.filter((candidate) => candidate.japanese === example.japanese);
     const answerPairs = Array.from(new Map(sameSpelling.map((candidate) => {
-      const pair = { acceptedReadings: candidate.acceptedReadings, meanings: candidate.meanings };
+      const pair = { acceptedReadings: candidate.acceptedReadings, meanings: candidate.meanings, acceptedMeanings: candidate.acceptedMeanings };
       return [JSON.stringify(pair), pair] as const;
     })).values());
     return {

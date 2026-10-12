@@ -6,6 +6,7 @@ const Reading = z.object({
   japanese: JapaneseText,
   reading: JapaneseText,
   meanings: z.array(z.string().min(1)).min(1),
+  acceptedMeanings: z.array(z.string().min(1)).default([]),
   acceptedReadings: z.array(JapaneseText).min(1),
 });
 

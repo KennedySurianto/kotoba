@@ -1,0 +1,1059 @@
+{
+  "id": "02",
+  "title": "Chapter 02",
+  "titleJapanese": "場所・買い物・食べ物",
+  "description": "Finding places, shopping, food, and common restaurant interactions.",
+  "vocabulary": [
+    {
+      "id": "v001",
+      "japanese": "おいしい",
+      "reading": "おいしい",
+      "meanings": [
+        "Delicious"
+      ],
+      "acceptedReadings": [
+        "おいしい"
+      ],
+      "category": "おいしい"
+    },
+    {
+      "id": "v002",
+      "japanese": "ここ / こちら",
+      "reading": "ここ",
+      "meanings": [
+        "Here",
+        "Here (formal)"
+      ],
+      "acceptedReadings": [
+        "ここ",
+        "こちら"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v003",
+      "japanese": "そこ / そちら",
+      "reading": "そこ",
+      "meanings": [
+        "There (relatively close)",
+        "There (formal; relatively close)"
+      ],
+      "acceptedMeanings": [
+        "There",
+        "There (formal)"
+      ],
+      "acceptedReadings": [
+        "そこ",
+        "そちら"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v004",
+      "japanese": "あそこ / あちら",
+      "reading": "あそこ",
+      "meanings": [
+        "There",
+        "There (formal; relatively far)"
+      ],
+      "acceptedReadings": [
+        "あそこ",
+        "あちら"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v005",
+      "japanese": "インフォメーション",
+      "reading": "いんふぉめーしょん",
+      "meanings": [
+        "Information center"
+      ],
+      "acceptedReadings": [
+        "いんふぉめーしょん"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v006",
+      "japanese": "ATM",
+      "reading": "えーてぃーえむ",
+      "meanings": [
+        "Automated Teller Machine"
+      ],
+      "acceptedReadings": [
+        "えーてぃーえむ"
+      ],
+      "category": "１ どこですか",
+      "notes": "Reading inferred; the source does not provide furigana."
+    },
+    {
+      "id": "v007",
+      "japanese": "エスカレーター",
+      "reading": "えすかれーたー",
+      "meanings": [
+        "Escalator"
+      ],
+      "acceptedReadings": [
+        "えすかれーたー"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v008",
+      "japanese": "エレベーター",
+      "reading": "えれべーたー",
+      "meanings": [
+        "Elevator"
+      ],
+      "acceptedReadings": [
+        "えれべーたー"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v009",
+      "japanese": "喫煙所",
+      "reading": "きつえんじょ",
+      "meanings": [
+        "Smoking area"
+      ],
+      "acceptedReadings": [
+        "きつえんじょ"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v010",
+      "japanese": "トイレ",
+      "reading": "といれ",
+      "meanings": [
+        "Restroom"
+      ],
+      "acceptedReadings": [
+        "といれ"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v011",
+      "japanese": "レジ",
+      "reading": "れじ",
+      "meanings": [
+        "(Cash) register"
+      ],
+      "acceptedReadings": [
+        "れじ"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v012",
+      "japanese": "喫茶店",
+      "reading": "きっさてん",
+      "meanings": [
+        "Coffee shop"
+      ],
+      "acceptedReadings": [
+        "きっさてん"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v013",
+      "japanese": "スーパー",
+      "reading": "すーぱー",
+      "meanings": [
+        "Supermarket"
+      ],
+      "acceptedReadings": [
+        "すーぱー"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v014",
+      "japanese": "100円ショップ",
+      "reading": "ひゃくえんしょっぷ",
+      "meanings": [
+        "100-yen shop"
+      ],
+      "acceptedReadings": [
+        "ひゃくえんしょっぷ"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v015",
+      "japanese": "レストラン",
+      "reading": "れすとらん",
+      "meanings": [
+        "Restaurant"
+      ],
+      "acceptedReadings": [
+        "れすとらん"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v016",
+      "japanese": "地下",
+      "reading": "ちか",
+      "meanings": [
+        "Basement"
+      ],
+      "acceptedReadings": [
+        "ちか"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v017",
+      "japanese": "カメラ",
+      "reading": "かめら",
+      "meanings": [
+        "Camera(s)"
+      ],
+      "acceptedReadings": [
+        "かめら"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v018",
+      "japanese": "携帯電話",
+      "reading": "けいたいでんわ",
+      "meanings": [
+        "Cell",
+        "Mobile phone"
+      ],
+      "acceptedReadings": [
+        "けいたいでんわ"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v019",
+      "japanese": "電子辞書",
+      "reading": "でんしじしょ",
+      "meanings": [
+        "Electronic dictionary"
+      ],
+      "acceptedReadings": [
+        "でんしじしょ"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v020",
+      "japanese": "パソコン",
+      "reading": "ぱそこん",
+      "meanings": [
+        "Laptop",
+        "Computer"
+      ],
+      "acceptedReadings": [
+        "ぱそこん"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v021",
+      "japanese": "靴",
+      "reading": "くつ",
+      "meanings": [
+        "Shoes"
+      ],
+      "acceptedReadings": [
+        "くつ"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v022",
+      "japanese": "消しゴム",
+      "reading": "けしごむ",
+      "meanings": [
+        "Eraser"
+      ],
+      "acceptedReadings": [
+        "けしごむ"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v023",
+      "japanese": "ペン",
+      "reading": "ぺん",
+      "meanings": [
+        "Pen"
+      ],
+      "acceptedReadings": [
+        "ぺん"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v024",
+      "japanese": "トイレットペーパー",
+      "reading": "といれっとぺーぱー",
+      "meanings": [
+        "Bathroom tissue",
+        "Toilet paper"
+      ],
+      "acceptedReadings": [
+        "といれっとぺーぱー"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v025",
+      "japanese": "本",
+      "reading": "ほん",
+      "meanings": [
+        "Book"
+      ],
+      "acceptedReadings": [
+        "ほん"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v026",
+      "japanese": "油",
+      "reading": "あぶら",
+      "meanings": [
+        "Oil"
+      ],
+      "acceptedReadings": [
+        "あぶら"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v027",
+      "japanese": "ケーキ",
+      "reading": "けーき",
+      "meanings": [
+        "Cake"
+      ],
+      "acceptedReadings": [
+        "けーき"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v028",
+      "japanese": "米",
+      "reading": "こめ",
+      "meanings": [
+        "Rice"
+      ],
+      "acceptedReadings": [
+        "こめ"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v029",
+      "japanese": "卵",
+      "reading": "たまご",
+      "meanings": [
+        "Egg"
+      ],
+      "acceptedReadings": [
+        "たまご"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v030",
+      "japanese": "パン",
+      "reading": "ぱん",
+      "meanings": [
+        "Bread"
+      ],
+      "acceptedReadings": [
+        "ぱん"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v031",
+      "japanese": "水",
+      "reading": "みず",
+      "meanings": [
+        "Water"
+      ],
+      "acceptedReadings": [
+        "みず"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v032",
+      "japanese": "店員",
+      "reading": "てんいん",
+      "meanings": [
+        "Clerk",
+        "Employee"
+      ],
+      "acceptedReadings": [
+        "てんいん"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v033",
+      "japanese": "～階",
+      "reading": "かい",
+      "meanings": [
+        "～ floor"
+      ],
+      "acceptedReadings": [
+        "かい"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v034",
+      "japanese": "～屋",
+      "reading": "や",
+      "meanings": [
+        "～ shop/store"
+      ],
+      "acceptedMeanings": [
+        "shop/store",
+        "shop",
+        "store"
+      ],
+      "acceptedReadings": [
+        "や"
+      ],
+      "category": "１ どこですか",
+      "notes": "Suffix for a shop or store; the source gives 本屋 (ほんや) as an example."
+    },
+    {
+      "id": "v035",
+      "japanese": "どこ",
+      "reading": "どこ",
+      "meanings": [
+        "Where"
+      ],
+      "acceptedReadings": [
+        "どこ"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v036",
+      "japanese": "いらっしゃいませ",
+      "reading": "いらっしゃいませ",
+      "meanings": [
+        "Welcome"
+      ],
+      "acceptedReadings": [
+        "いらっしゃいませ"
+      ],
+      "category": "１ どこですか"
+    },
+    {
+      "id": "v037",
+      "japanese": "(どうも)ありがとうございます",
+      "reading": "どうもありがとうございます",
+      "meanings": [
+        "Thank you very much"
+      ],
+      "acceptedReadings": [
+        "ありがとうございます",
+        "どうもありがとうございます"
+      ],
+      "category": "１ どこですか",
+      "notes": "The source marks どうも as optional."
+    },
+    {
+      "id": "v038",
+      "japanese": "これ",
+      "reading": "これ",
+      "meanings": [
+        "This"
+      ],
+      "acceptedReadings": [
+        "これ"
+      ],
+      "category": "２ いくらですか"
+    },
+    {
+      "id": "v039",
+      "japanese": "それ",
+      "reading": "それ",
+      "meanings": [
+        "That (relatively close)"
+      ],
+      "acceptedReadings": [
+        "それ"
+      ],
+      "category": "２ いくらですか"
+    },
+    {
+      "id": "v040",
+      "japanese": "あれ",
+      "reading": "あれ",
+      "meanings": [
+        "That (relatively far)"
+      ],
+      "acceptedReadings": [
+        "あれ"
+      ],
+      "category": "２ いくらですか"
+    },
+    {
+      "id": "v041",
+      "japanese": "この",
+      "reading": "この",
+      "meanings": [
+        "This (before a noun)"
+      ],
+      "acceptedReadings": [
+        "この"
+      ],
+      "category": "２ いくらですか"
+    },
+    {
+      "id": "v042",
+      "japanese": "その",
+      "reading": "その",
+      "meanings": [
+        "That (before a noun; relatively close)"
+      ],
+      "acceptedMeanings": [
+        "That"
+      ],
+      "acceptedReadings": [
+        "その"
+      ],
+      "category": "２ いくらですか"
+    },
+    {
+      "id": "v043",
+      "japanese": "あの",
+      "reading": "あの",
+      "meanings": [
+        "That (before a noun; relatively far)"
+      ],
+      "acceptedMeanings": [
+        "That"
+      ],
+      "acceptedReadings": [
+        "あの"
+      ],
+      "category": "２ いくらですか"
+    },
+    {
+      "id": "v044",
+      "japanese": "かばん",
+      "reading": "かばん",
+      "meanings": [
+        "Bag"
+      ],
+      "acceptedReadings": [
+        "かばん"
+      ],
+      "category": "２ いくらですか"
+    },
+    {
+      "id": "v045",
+      "japanese": "ズボン",
+      "reading": "ずぼん",
+      "meanings": [
+        "Pants",
+        "Slacks"
+      ],
+      "acceptedReadings": [
+        "ずぼん"
+      ],
+      "category": "２ いくらですか"
+    },
+    {
+      "id": "v046",
+      "japanese": "Tシャツ",
+      "reading": "てぃーしゃつ",
+      "meanings": [
+        "T-shirt"
+      ],
+      "acceptedReadings": [
+        "てぃーしゃつ"
+      ],
+      "category": "２ いくらですか",
+      "notes": "Reading inferred; the source does not provide furigana."
+    },
+    {
+      "id": "v047",
+      "japanese": "時計",
+      "reading": "とけい",
+      "meanings": [
+        "Watch",
+        "Clock"
+      ],
+      "acceptedReadings": [
+        "とけい"
+      ],
+      "category": "２ いくらですか"
+    },
+    {
+      "id": "v048",
+      "japanese": "～円",
+      "reading": "えん",
+      "meanings": [
+        "～ yen"
+      ],
+      "acceptedMeanings": [
+        "yen"
+      ],
+      "acceptedReadings": [
+        "えん"
+      ],
+      "category": "２ いくらですか"
+    },
+    {
+      "id": "v049",
+      "japanese": "いくら",
+      "reading": "いくら",
+      "meanings": [
+        "How much?"
+      ],
+      "acceptedReadings": [
+        "いくら"
+      ],
+      "category": "２ いくらですか"
+    },
+    {
+      "id": "v050",
+      "japanese": "じゃ",
+      "reading": "じゃ",
+      "meanings": [
+        "Well",
+        "OK"
+      ],
+      "acceptedReadings": [
+        "じゃ"
+      ],
+      "category": "２ いくらですか"
+    },
+    {
+      "id": "v051",
+      "japanese": "魚",
+      "reading": "さかな",
+      "meanings": [
+        "Fish"
+      ],
+      "acceptedReadings": [
+        "さかな"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v052",
+      "japanese": "肉",
+      "reading": "にく",
+      "meanings": [
+        "Meat"
+      ],
+      "acceptedReadings": [
+        "にく"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v053",
+      "japanese": "牛肉",
+      "reading": "ぎゅうにく",
+      "meanings": [
+        "Beef"
+      ],
+      "acceptedReadings": [
+        "ぎゅうにく"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v054",
+      "japanese": "鶏肉",
+      "reading": "とりにく",
+      "meanings": [
+        "Chicken"
+      ],
+      "acceptedReadings": [
+        "とりにく"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v055",
+      "japanese": "豚肉",
+      "reading": "ぶたにく",
+      "meanings": [
+        "Pork"
+      ],
+      "acceptedReadings": [
+        "ぶたにく"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v056",
+      "japanese": "野菜",
+      "reading": "やさい",
+      "meanings": [
+        "Vegetables"
+      ],
+      "acceptedReadings": [
+        "やさい"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v057",
+      "japanese": "イチゴ",
+      "reading": "いちご",
+      "meanings": [
+        "Strawberry"
+      ],
+      "acceptedReadings": [
+        "いちご"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v058",
+      "japanese": "リンゴ",
+      "reading": "りんご",
+      "meanings": [
+        "Apple"
+      ],
+      "acceptedReadings": [
+        "りんご"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v059",
+      "japanese": "料理",
+      "reading": "りょうり",
+      "meanings": [
+        "Dish (a type of food)"
+      ],
+      "acceptedReadings": [
+        "りょうり"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v060",
+      "japanese": "カレー",
+      "reading": "かれー",
+      "meanings": [
+        "Curry"
+      ],
+      "acceptedReadings": [
+        "かれー"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v061",
+      "japanese": "スープ",
+      "reading": "すーぷ",
+      "meanings": [
+        "Soup"
+      ],
+      "acceptedReadings": [
+        "すーぷ"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v062",
+      "japanese": "とんかつ",
+      "reading": "とんかつ",
+      "meanings": [
+        "Pork cutlet"
+      ],
+      "acceptedReadings": [
+        "とんかつ"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v063",
+      "japanese": "ハンバーグ",
+      "reading": "はんばーぐ",
+      "meanings": [
+        "Hamburger meat"
+      ],
+      "acceptedReadings": [
+        "はんばーぐ"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v064",
+      "japanese": "ご飯",
+      "reading": "ごはん",
+      "meanings": [
+        "Cooked rice"
+      ],
+      "acceptedReadings": [
+        "ごはん"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v065",
+      "japanese": "ライス",
+      "reading": "らいす",
+      "meanings": [
+        "Rice"
+      ],
+      "acceptedReadings": [
+        "らいす"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v066",
+      "japanese": "ジュース",
+      "reading": "じゅーす",
+      "meanings": [
+        "Juice"
+      ],
+      "acceptedReadings": [
+        "じゅーす"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v067",
+      "japanese": "コーヒー",
+      "reading": "こーひー",
+      "meanings": [
+        "Coffee"
+      ],
+      "acceptedReadings": [
+        "こーひー"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v068",
+      "japanese": "紅茶",
+      "reading": "こうちゃ",
+      "meanings": [
+        "Tea (black tea)"
+      ],
+      "acceptedReadings": [
+        "こうちゃ"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v069",
+      "japanese": "(お)茶",
+      "reading": "おちゃ",
+      "meanings": [
+        "Green tea"
+      ],
+      "acceptedReadings": [
+        "ちゃ",
+        "おちゃ"
+      ],
+      "category": "３ レストラン",
+      "notes": "The source marks お as optional."
+    },
+    {
+      "id": "v070",
+      "japanese": "ビール",
+      "reading": "びーる",
+      "meanings": [
+        "Beer"
+      ],
+      "acceptedReadings": [
+        "びーる"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v071",
+      "japanese": "ワイン",
+      "reading": "わいん",
+      "meanings": [
+        "Wine"
+      ],
+      "acceptedReadings": [
+        "わいん"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v072",
+      "japanese": "インド",
+      "reading": "いんど",
+      "meanings": [
+        "India (here: Indian)"
+      ],
+      "acceptedReadings": [
+        "いんど"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v073",
+      "japanese": "ドイツ",
+      "reading": "どいつ",
+      "meanings": [
+        "Germany"
+      ],
+      "acceptedReadings": [
+        "どいつ"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v074",
+      "japanese": "フランス",
+      "reading": "ふらんす",
+      "meanings": [
+        "France"
+      ],
+      "acceptedReadings": [
+        "ふらんす"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v075",
+      "japanese": "財布",
+      "reading": "さいふ",
+      "meanings": [
+        "Wallet",
+        "Billfold"
+      ],
+      "acceptedReadings": [
+        "さいふ"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v076",
+      "japanese": "英語",
+      "reading": "えいご",
+      "meanings": [
+        "English"
+      ],
+      "acceptedReadings": [
+        "えいご"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v077",
+      "japanese": "～語",
+      "reading": "ご",
+      "meanings": [
+        "Language identifier (e.g., Japanese)"
+      ],
+      "acceptedReadings": [
+        "ご"
+      ],
+      "category": "３ レストラン",
+      "notes": "Suffix identifying a language; the source gives 日本語 (にほんご) as an example."
+    },
+    {
+      "id": "v078",
+      "japanese": "～つ",
+      "reading": "つ",
+      "meanings": [
+        "Counter"
+      ],
+      "acceptedReadings": [
+        "～つ"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v079",
+      "japanese": "誰",
+      "reading": "だれ",
+      "meanings": [
+        "Someone",
+        "Who"
+      ],
+      "acceptedReadings": [
+        "だれ"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v080",
+      "japanese": "注文をお願いします",
+      "reading": "ちゅうもんをおねがいします",
+      "meanings": [
+        "I'd like to order now"
+      ],
+      "acceptedReadings": [
+        "ちゅうもんをおねがいします"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v081",
+      "japanese": "どうぞ",
+      "reading": "どうぞ",
+      "meanings": [
+        "Certainly",
+        "Go ahead"
+      ],
+      "acceptedReadings": [
+        "どうぞ"
+      ],
+      "category": "３ レストラン"
+    },
+    {
+      "id": "v082",
+      "japanese": "こちらへどうぞ",
+      "reading": "こちらへどうぞ",
+      "meanings": [
+        "This way, please"
+      ],
+      "acceptedReadings": [
+        "こちらへどうぞ"
+      ],
+      "category": "もう一度聞こう"
+    },
+    {
+      "id": "v083",
+      "japanese": "メニュー",
+      "reading": "めにゅー",
+      "meanings": [
+        "Menu"
+      ],
+      "acceptedReadings": [
+        "めにゅー"
+      ],
+      "category": "もう一度聞こう"
+    },
+    {
+      "id": "v084",
+      "japanese": "少々お待ちください",
+      "reading": "しょうしょうおまちください",
+      "meanings": [
+        "One moment, please"
+      ],
+      "acceptedReadings": [
+        "しょうしょうおまちください"
+      ],
+      "category": "もう一度聞こう"
+    }
+  ],
+  "kanji": []
+}
