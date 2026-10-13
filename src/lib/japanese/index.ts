@@ -17,6 +17,7 @@ export function normalizeMeaning(value: string) {
   return value
     .normalize("NFKC")
     .toLocaleLowerCase()
+    .replace(/[~〜～]/g, "")
     .replace(/\s*\/\s*/g, " / ")
     .replace(/[\s.,!?;:'"()[\]{}]+/g, " ")
     .replace(/\s+/g, " ")

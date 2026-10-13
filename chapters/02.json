@@ -435,7 +435,7 @@
       "meanings": [
         "～ floor"
       ],
-      "acceptedMeanings": ["floors", "level", "～ story", "～ storey"],
+      "acceptedMeanings": ["floors", "level", "levels", "～ story", "stories", "～ storey", "storeys"],
       "acceptedReadings": [
         "かい"
       ],
@@ -647,6 +647,7 @@
       "meanings": [
         "～ yen"
       ],
+      "acceptedMeanings": ["yen"],
       "acceptedMeanings": [
       ],
       "acceptedReadings": [

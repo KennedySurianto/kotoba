@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight, RotateCcw, Shuffle, Volume2 } from "lucide-react";
 import { toHiragana } from "wanakana";
 import { matchesKanjiAnswer, matchesMeaning, matchesReading, normalizeReading, romaji } from "@/lib/japanese";
@@ -11,6 +11,91 @@ import { loadProgress, recordAnswer, setDifficult, type ProgressStore } from "@/
 import type { StudyItem } from "@/lib/study/types";
 
 type Mode = "learn" | "flashcards" | "quiz";
+
+const kanjiReadingSplits: Record<string, string[]> = {
+  "喫煙所": ["きつ", "えん", "じょ"],
+  "喫茶店": ["きっ", "さ", "てん"],
+  "地下": ["ち", "か"],
+  "携帯電話": ["けい", "たい", "でん", "わ"],
+  "電子辞書": ["でん", "し", "じ", "しょ"],
+  "店員": ["てん", "いん"],
+  "牛肉": ["ぎゅう", "にく"],
+  "鶏肉": ["とり", "にく"],
+  "豚肉": ["ぶた", "にく"],
+  "野菜": ["や", "さい"],
+  "料理": ["りょう", "り"],
+  "紅茶": ["こう", "ちゃ"],
+  "財布": ["さい", "ふ"],
+  "英語": ["えい", "ご"],
+  "注文": ["ちゅう", "もん"],
+  "少々": ["しょう", "しょう"],
+};
+
+function splitReadingByKanji(kanji: string[], reading: string) {
+  const knownSplit = kanjiReadingSplits[kanji.join("")];
+  if (knownSplit?.join("") === reading) return knownSplit;
+  if (kanji.length === 1) return [reading];
+
+  const mora = Array.from(reading).reduce<string[]>((result, character) => {
+    if (/[ゃゅょぁぃぅぇぉゎャュョァィゥェォヮ]/u.test(character) && result.length > 0) result[result.length - 1] += character;
+    else result.push(character);
+    return result;
+  }, []);
+  let offset = 0;
+  return kanji.map((_, index) => {
+    const remainingKanji = kanji.length - index;
+    const remainingMora = mora.length - offset;
+    const count = index === kanji.length - 1 ? remainingMora : Math.max(1, Math.round(remainingMora / remainingKanji));
+    const chunk = mora.slice(offset, offset + count).join("");
+    offset += count;
+    return chunk;
+  });
+}
+
+function renderKotobaWithFurigana(japanese: string, reading: string): ReactNode {
+  const tokens = Array.from(japanese).reduce<{ kind: "kanji" | "kana" | "other"; text: string; furigana?: string }[]>((result, character) => {
+    const kind = /\p{Script=Han}/u.test(character) || character === "々" ? "kanji" : /[\p{Script=Hiragana}\p{Script=Katakana}ー]/u.test(character) ? "kana" : "other";
+    const previous = result[result.length - 1];
+    if (kind !== "kanji" && previous?.kind === kind) previous.text += character;
+    else result.push({ kind, text: character });
+    return result;
+  }, []);
+  const hiraganaReading = normalizeReading(reading);
+  let readingOffset = 0;
+
+  for (let index = 0; index < tokens.length; index += 1) {
+    const token = tokens[index];
+    if (token.kind === "kana") {
+      const kana = normalizeReading(token.text);
+      const matchAt = hiraganaReading.indexOf(kana, readingOffset);
+      if (matchAt >= readingOffset) readingOffset = matchAt + kana.length;
+      continue;
+    }
+    if (token.kind !== "kanji") continue;
+
+    const kanjiRun = [token];
+    while (tokens[index + 1]?.kind === "kanji") kanjiRun.push(tokens[++index]);
+    const nextKana = tokens.slice(index + 1).find((candidate) => candidate.kind === "kana");
+    if (nextKana) {
+      const nextKanaText = normalizeReading(nextKana.text);
+      const nextKanaAt = hiraganaReading.indexOf(nextKanaText, readingOffset);
+      if (nextKanaAt >= readingOffset) {
+        splitReadingByKanji(kanjiRun.map((part) => part.text), hiraganaReading.slice(readingOffset, nextKanaAt)).forEach((furigana, partIndex) => {
+          kanjiRun[partIndex].furigana = furigana;
+        });
+      }
+    } else {
+      splitReadingByKanji(kanjiRun.map((part) => part.text), hiraganaReading.slice(readingOffset)).forEach((furigana, partIndex) => {
+        kanjiRun[partIndex].furigana = furigana;
+      });
+    }
+  }
+
+  return <>{tokens.map((token, index) => token.kind === "kanji" && token.furigana
+    ? <ruby className="prompt-furigana" key={`${index}-${token.text}`}>{token.text}<rt>{token.furigana}</rt></ruby>
+    : <span key={`${index}-${token.text}`}>{token.text}</span>)}</>;
+}
+
 function expandVocabularyAlternatives(items: StudyItem[]) {
   return items.flatMap((item) => {
     const forms = item.japanese.split(/\s*\/\s*/).map((form) => form.trim()).filter(Boolean);
@@ -187,7 +272,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
       <div className={`session-progress ${mode === "quiz" ? "with-smart-shuffle" : ""}`}><span>{String(index + 1).padStart(2, "0")} <i>/</i> {String(items.length).padStart(2, "0")}</span><div><i style={{ width: `${((index + 1) / items.length) * 100}%` }} /></div>{mode === "quiz" && <button type="button" className={`smart-shuffle-toggle ${smartShuffle ? "is-active" : ""}`} aria-pressed={smartShuffle} title="Prioritize missed and difficult cards; shuffle ties." disabled={checked !== null} onClick={toggleSmartShuffle}><Shuffle size={12} /> SMART {smartShuffle ? "ON" : "OFF"}</button>}<button onClick={skip}>Skip <ArrowRight size={13} /></button></div>
       <div className="study-card-stage" key={current?.key}>
         <div className="study-context">{current?.kanji && <span className="kanji-chip">KANJI {current.kanji}</span>}<span>{current?.category ?? (current?.kanji ? `${current.strokeCount} STROKES` : "CHAPTER WORD")}</span><button className="audio-button" onClick={speak} aria-label="Play Japanese pronunciation"><Volume2 size={16} /></button></div>
-        <div className="study-prompt"><span className={`prompt-japanese ${mode === "flashcards" && activeDirection === "reverse" ? "prompt-english" : ""}`}>{mode === "flashcards" && activeDirection === "reverse" ? current?.meanings.join(" · ") : kanjiInVocabulary ? <ruby className="prompt-furigana">{current?.japanese}<rt>{normalizeReading(current?.reading ?? "")}</rt></ruby> : current?.japanese}</span>{mode === "quiz" ? <span className="prompt-meaning">{vocabularyQuiz ? "TYPE THE ENGLISH MEANING" : "TYPE THE READING + ENGLISH MEANING"}</span> : (mode !== "flashcards" || (Boolean(current?.kanji) && activeDirection !== "meaning") || activeDirection === "reverse") && <span className="prompt-meaning">{mode === "flashcards" && activeDirection === "reverse" ? "FIND THE JAPANESE" : current?.meanings.join(" · ")}</span>}</div>
+        <div className="study-prompt"><span className={`prompt-japanese ${mode === "flashcards" && activeDirection === "reverse" ? "prompt-english" : ""}`}>{mode === "flashcards" && activeDirection === "reverse" ? current?.meanings.join(" · ") : kanjiInVocabulary ? renderKotobaWithFurigana(current?.japanese ?? "", current?.reading ?? "") : current?.japanese}</span>{mode === "quiz" ? <span className="prompt-meaning">{vocabularyQuiz ? "TYPE THE ENGLISH MEANING" : "TYPE THE READING + ENGLISH MEANING"}</span> : (mode !== "flashcards" || (Boolean(current?.kanji) && activeDirection !== "meaning") || activeDirection === "reverse") && <span className="prompt-meaning">{mode === "flashcards" && activeDirection === "reverse" ? "FIND THE JAPANESE" : current?.meanings.join(" · ")}</span>}</div>
         {mode === "flashcards" ? <div className={`flash-reveal ${revealed ? "is-revealed" : ""}`}>
           {revealed ? <><span className="answer-reading">{activeDirection === "reverse" ? current?.japanese : activeDirection === "meaning" ? current?.meanings.join(" · ") : current?.reading}</span><span className="answer-romaji">{activeDirection === "reverse" ? current?.reading : romaji(current?.reading ?? "")}</span>{activeDirection !== "meaning" && <span className="answer-meaning">{current?.meanings.join(" · ")}</span>}<div className="answer-actions"><button className="answer-wrong" onClick={() => mark(false)}>Again</button><button className="difficult-button" onClick={() => { setDifficult(current.key, true); mark(false, true); }}>Difficult</button><button className="answer-correct" onClick={() => mark(true)}>I knew it <Check size={15} /></button></div></> : <button className="reveal-button" onClick={() => setRevealed(true)}>Reveal answer <span>SPACE</span></button>}
         </div> : <div className="quiz-answer-area">

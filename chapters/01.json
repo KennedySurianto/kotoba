@@ -288,7 +288,7 @@
         "Mr.",
         "Ms. (honorific title)"
       ],
-      "acceptedMeanings": ["-san", "Honorific suffix", "Polite name suffix"],
+      "acceptedMeanings": ["-san", "Mr", "Ms", "Mister", "Miss", "Mrs", "Honorific suffix", "Polite name suffix"],
       "acceptedReadings": [
         "さん"
       ],
@@ -302,7 +302,7 @@
       "meanings": [
         "Person of"
       ],
-      "acceptedMeanings": ["Person from", "Nationality suffix"],
+      "acceptedMeanings": ["Person from", "Person from a country", "Nationality", "Nationality suffix"],
       "acceptedReadings": [
         "じん"
       ],
@@ -452,7 +452,7 @@
       "meanings": [
         "Month"
       ],
-      "acceptedMeanings": ["Month of the year", "Month suffix"],
+      "acceptedMeanings": ["Month of the year", "Month suffix", "Month counter", "Counter for months"],
       "acceptedReadings": [
         "がつ"
       ],
@@ -466,7 +466,7 @@
       "meanings": [
         "Day"
       ],
-      "acceptedMeanings": ["Date", "Day of the month", "Day suffix"],
+      "acceptedMeanings": ["Date", "Day of the month", "Day suffix", "Day counter", "Date of the month"],
       "acceptedReadings": [
         "にち"
       ],
@@ -481,7 +481,7 @@
         "Age",
         "... years old"
       ],
-      "acceptedMeanings": ["Years of age"],
+      "acceptedMeanings": ["Years of age", "Years old", "Age suffix"],
       "acceptedReadings": [
         "さい"
       ],
