@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, CirclePlay, Download, RotateCcw, Upload } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -17,7 +17,6 @@ const methodSteps = [
   { title: "Return to mistakes", description: "Review missed answers in a focused session, one fresh attempt at a time." },
   { title: "Come back over time", description: "Your browser saves progress and brings cards back when they are due." },
 ];
-
 export function HomeExperience({ chapters }: { chapters: Chapter[] }) {
   const [progress, setProgress] = useState<ProgressStore>({ cards: {}, updatedAt: "" });
   const [activeMethodStep, setActiveMethodStep] = useState(0);
@@ -26,10 +25,23 @@ export function HomeExperience({ chapters }: { chapters: Chapter[] }) {
   const methodStepRefs = useRef<Array<HTMLElement | null>>([]);
   const backupInput = useRef<HTMLInputElement>(null);
   const [backupMessage, setBackupMessage] = useState("");
+  const heroFigures = useMemo(() => {
+    const figures = new Map<string, string>();
+    chapters.forEach((chapter) => chapter.kanji.forEach((kanji) => {
+      if (!figures.has(kanji.character)) figures.set(kanji.character, kanji.meanings[0] ?? "Japanese character");
+    }));
+    return Array.from(figures, ([character, meaning]) => ({ character, meaning }));
+  }, [chapters]);
+  const [heroFigure, setHeroFigure] = useState<{ character: string; meaning: string } | null>(null);
   useEffect(() => {
     const timer = window.setTimeout(() => setProgress(loadProgress()), 0);
     return () => window.clearTimeout(timer);
   }, []);
+  useEffect(() => {
+    if (heroFigures.length === 0) return;
+    const randomIndex = Math.floor(Math.random() * heroFigures.length);
+    setHeroFigure(heroFigures[randomIndex] ?? null);
+  }, [heroFigures]);
   useEffect(() => {
     const updateActiveStep = () => {
       const readingLine = window.innerHeight * 0.42;
@@ -96,10 +108,9 @@ export function HomeExperience({ chapters }: { chapters: Chapter[] }) {
         <p className="hero-intro">A thoughtful space to build a lasting relationship with Japanese — one chapter, one word, one small moment at a time.</p>
         <div className="hero-actions"><Link className="button button-dark" href="#chapters">Explore the chapters <ArrowRight size={16} /></Link><span className="hero-note">A personal study practice<br />made for your own pace.</span></div>
       </div>
-      <div className="hero-art" aria-label="Decorative Japanese character 一">
+      <div className="hero-art" role={heroFigure ? "img" : undefined} aria-label={heroFigure ? `Decorative Japanese character ${heroFigure.character}, meaning ${heroFigure.meaning}` : undefined}>
         <span className="hero-art-orbit orbit-a" /><span className="hero-art-orbit orbit-b" />
-        <div className="hero-kanji">一</div>
-        <span className="hero-art-caption">一 — one<br />the beginning of everything</span>
+        {heroFigure && <><div className="hero-kanji">{heroFigure.character}</div><span className="hero-art-caption">{heroFigure.character} — {heroFigure.meaning.toLowerCase()}<br />one mark from your study path</span></>}
         <span className="hero-art-index">FIG. 01<br />THE FIRST MARK</span>
       </div>
       <div className="hero-bottom"><span>LESS, LEARNED DEEPLY</span><a href="#chapters">Scroll to begin <ArrowDown size={13} /></a><span>START WHERE YOU ARE</span></div>
