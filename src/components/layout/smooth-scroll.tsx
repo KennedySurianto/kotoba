@@ -13,7 +13,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || pathname.includes("/study/")) return;
-    const lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
+    const lenis = new Lenis({ lerp: 0.09, smoothWheel: true, anchors: true });
     lenisRef.current = lenis;
     const sync = () => ScrollTrigger.update();
     lenis.on("scroll", sync);
