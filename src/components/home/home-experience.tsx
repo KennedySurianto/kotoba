@@ -10,14 +10,53 @@ import { exportProgress, importProgress, loadProgress, type ProgressStore } from
 
 gsap.registerPlugin(ScrollTrigger);
 
+const methodSteps = [
+  { title: "Start with a chapter", description: "Choose a focused set of words and characters for each study session." },
+  { title: "Meet words in context", description: "Study vocabulary and kanji together, with readings and meanings side by side." },
+  { title: "Recall before you reveal", description: "Use quizzes to bring a reading or meaning to mind from memory." },
+  { title: "Return to mistakes", description: "Review missed answers in a focused session, one fresh attempt at a time." },
+  { title: "Come back over time", description: "Your browser saves progress and brings cards back when they are due." },
+];
+
 export function HomeExperience({ chapters }: { chapters: Chapter[] }) {
   const [progress, setProgress] = useState<ProgressStore>({ cards: {}, updatedAt: "" });
+  const [activeMethodStep, setActiveMethodStep] = useState(0);
+  const activeMethodStepRef = useRef(0);
   const pageRef = useRef<HTMLElement>(null);
+  const methodStepRefs = useRef<Array<HTMLElement | null>>([]);
   const backupInput = useRef<HTMLInputElement>(null);
   const [backupMessage, setBackupMessage] = useState("");
   useEffect(() => {
     const timer = window.setTimeout(() => setProgress(loadProgress()), 0);
     return () => window.clearTimeout(timer);
+  }, []);
+  useEffect(() => {
+    const updateActiveStep = () => {
+      const readingLine = window.innerHeight * 0.42;
+      let nearestIndex = activeMethodStepRef.current;
+      let nearestDistance = Number.POSITIVE_INFINITY;
+      methodStepRefs.current.forEach((step, index) => {
+        if (!step) return;
+        const bounds = step.getBoundingClientRect();
+        if (bounds.bottom <= 0 || bounds.top >= window.innerHeight) return;
+        const distance = Math.abs(bounds.top + bounds.height * 0.45 - readingLine);
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          nearestIndex = index;
+        }
+      });
+      if (activeMethodStepRef.current !== nearestIndex) {
+        activeMethodStepRef.current = nearestIndex;
+        setActiveMethodStep(nearestIndex);
+      }
+    };
+    updateActiveStep();
+    window.addEventListener("scroll", updateActiveStep, { passive: true });
+    window.addEventListener("resize", updateActiveStep);
+    return () => {
+      window.removeEventListener("scroll", updateActiveStep);
+      window.removeEventListener("resize", updateActiveStep);
+    };
   }, []);
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -63,10 +102,26 @@ export function HomeExperience({ chapters }: { chapters: Chapter[] }) {
         <span className="hero-art-caption">一 — one<br />the beginning of everything</span>
         <span className="hero-art-index">FIG. 01<br />THE FIRST MARK</span>
       </div>
-      <div className="hero-bottom"><span>LESS, LEARNED DEEPLY</span><a href="#chapters">Scroll to begin <ArrowDown size={13} /></a><span>01 / 05 — START WHERE YOU ARE</span></div>
+      <div className="hero-bottom"><span>LESS, LEARNED DEEPLY</span><a href="#chapters">Scroll to begin <ArrowDown size={13} /></a><span>START WHERE YOU ARE</span></div>
     </section>
 
-    <section className="intro-strip wrap" id="method"><div className="section-index">01 <span>／</span> INTENTION</div><p>Learning a language isn’t about collecting answers. It’s about noticing patterns, meeting words again, and letting meaning settle in.</p><div className="intro-jp">ことばは、<br />出会いの積み重ね。</div></section>
+    <section className="method-section wrap" id="method">
+      <div className="method-layout">
+        <div className="method-overview">
+          <div className="method-heading">
+            <div><p className="eyebrow"><span className="eyebrow-line" />A PRACTICE IN FIVE STEPS</p><h2>Learn a little.<br /><em>Remember more.</em></h2></div>
+            <p>Learning Japanese takes more than collecting answers. Build a steady rhythm: notice patterns, recall what you know, and meet each word again.</p>
+          </div>
+          <div className="method-progress" aria-live="polite">
+            <span className="method-progress-count">{String(activeMethodStep + 1).padStart(2, "0")} <i>/ 05</i></span>
+            <strong>{methodSteps[activeMethodStep].title}</strong>
+            <span className="method-progress-track"><i style={{ width: `${((activeMethodStep + 1) / methodSteps.length) * 100}%` }} /></span>
+          </div>
+        </div>
+        <div className="method-steps">{methodSteps.map((step, index) => <article className="method-step" key={step.title} ref={(element) => { methodStepRefs.current[index] = element; }}><span>{String(index + 1).padStart(2, "0")} <i>/ 05</i></span><h3>{step.title}</h3><p>{step.description}</p></article>)}</div>
+      </div>
+      <div className="method-note"><span>ことばは、出会いの積み重ね。</span><span>NOTICE · RECALL · RETURN</span></div>
+    </section>
 
     <section className="chapters-section" id="chapters"><div className="wrap">
       <div className="section-head"><div><p className="eyebrow"><span className="eyebrow-line" />YOUR STUDY PATH</p><h2>Begin with a <em>chapter.</em></h2></div><p className="section-aside">Each chapter brings vocabulary and kanji<br />together, just as they live in language.</p></div>
