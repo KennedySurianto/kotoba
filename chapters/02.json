@@ -69,6 +69,7 @@
       "meanings": [
         "Information center"
       ],
+      "acceptedMeanings": ["Information centers"],
       "acceptedReadings": [
         "いんふぉめーしょん"
       ],
@@ -81,6 +82,7 @@
       "meanings": [
         "Automated Teller Machine"
       ],
+      "acceptedMeanings": ["ATM machine", "Cash machine"],
       "acceptedReadings": [
         "えーてぃーえむ"
       ],
@@ -94,6 +96,7 @@
       "meanings": [
         "Escalator"
       ],
+      "acceptedMeanings": ["Escalators"],
       "acceptedReadings": [
         "えすかれーたー"
       ],
@@ -106,6 +109,7 @@
       "meanings": [
         "Elevator"
       ],
+      "acceptedMeanings": ["Elevators"],
       "acceptedReadings": [
         "えれべーたー"
       ],
@@ -118,6 +122,7 @@
       "meanings": [
         "Smoking area"
       ],
+      "acceptedMeanings": ["Smoking areas"],
       "acceptedReadings": [
         "きつえんじょ"
       ],
@@ -130,6 +135,7 @@
       "meanings": [
         "Restroom"
       ],
+      "acceptedMeanings": ["Restrooms", "Bathroom", "Bathrooms", "Washroom", "Washrooms", "Toilet"],
       "acceptedReadings": [
         "といれ"
       ],
@@ -142,6 +148,7 @@
       "meanings": [
         "(Cash) register"
       ],
+      "acceptedMeanings": ["Register", "Registers", "Cash registers", "Checkout", "Till"],
       "acceptedReadings": [
         "れじ"
       ],
@@ -154,6 +161,7 @@
       "meanings": [
         "Coffee shop"
       ],
+      "acceptedMeanings": ["Coffee shops"],
       "acceptedReadings": [
         "きっさてん"
       ],
@@ -166,6 +174,7 @@
       "meanings": [
         "Supermarket"
       ],
+      "acceptedMeanings": ["Supermarkets", "Grocery store", "Grocery stores"],
       "acceptedReadings": [
         "すーぱー"
       ],
@@ -178,6 +187,7 @@
       "meanings": [
         "100-yen shop"
       ],
+      "acceptedMeanings": ["100-yen shops"],
       "acceptedReadings": [
         "ひゃくえんしょっぷ"
       ],
@@ -190,6 +200,7 @@
       "meanings": [
         "Restaurant"
       ],
+      "acceptedMeanings": ["Restaurants"],
       "acceptedReadings": [
         "れすとらん"
       ],
@@ -202,6 +213,7 @@
       "meanings": [
         "Basement"
       ],
+      "acceptedMeanings": ["Basements"],
       "acceptedReadings": [
         "ちか"
       ],
@@ -212,8 +224,9 @@
       "japanese": "カメラ",
       "reading": "かめら",
       "meanings": [
-        "Camera(s)"
+        "Camera"
       ],
+      "acceptedMeanings": ["Cameras"],
       "acceptedReadings": [
         "かめら"
       ],
@@ -227,6 +240,7 @@
         "Cell",
         "Mobile phone"
       ],
+      "acceptedMeanings": ["Cell phone", "Cell phones", "Mobile phones", "Cellular phone", "Cellular phones"],
       "acceptedReadings": [
         "けいたいでんわ"
       ],
@@ -239,6 +253,7 @@
       "meanings": [
         "Electronic dictionary"
       ],
+      "acceptedMeanings": ["Electronic dictionaries"],
       "acceptedReadings": [
         "でんしじしょ"
       ],
@@ -252,6 +267,7 @@
         "Laptop",
         "Computer"
       ],
+      "acceptedMeanings": ["Laptops", "Computers"],
       "acceptedReadings": [
         "ぱそこん"
       ],
@@ -264,6 +280,7 @@
       "meanings": [
         "Shoes"
       ],
+      "acceptedMeanings": ["Shoe"],
       "acceptedReadings": [
         "くつ"
       ],
@@ -276,6 +293,7 @@
       "meanings": [
         "Eraser"
       ],
+      "acceptedMeanings": ["Erasers"],
       "acceptedReadings": [
         "けしごむ"
       ],
@@ -288,6 +306,7 @@
       "meanings": [
         "Pen"
       ],
+      "acceptedMeanings": ["Pens"],
       "acceptedReadings": [
         "ぺん"
       ],
@@ -301,6 +320,7 @@
         "Bathroom tissue",
         "Toilet paper"
       ],
+      "acceptedMeanings": ["Toilet tissue"],
       "acceptedReadings": [
         "といれっとぺーぱー"
       ],
@@ -313,6 +333,7 @@
       "meanings": [
         "Book"
       ],
+      "acceptedMeanings": ["Books"],
       "acceptedReadings": [
         "ほん"
       ],
@@ -325,6 +346,7 @@
       "meanings": [
         "Oil"
       ],
+      "acceptedMeanings": ["Cooking oil"],
       "acceptedReadings": [
         "あぶら"
       ],
@@ -337,6 +359,7 @@
       "meanings": [
         "Cake"
       ],
+      "acceptedMeanings": ["Cakes"],
       "acceptedReadings": [
         "けーき"
       ],
@@ -361,6 +384,7 @@
       "meanings": [
         "Egg"
       ],
+      "acceptedMeanings": ["Eggs"],
       "acceptedReadings": [
         "たまご"
       ],
@@ -398,6 +422,7 @@
         "Clerk",
         "Employee"
       ],
+      "acceptedMeanings": ["Clerks", "Employees", "Shop assistant", "Store clerk", "Salesperson"],
       "acceptedReadings": [
         "てんいん"
       ],
@@ -410,6 +435,7 @@
       "meanings": [
         "～ floor"
       ],
+      "acceptedMeanings": ["floors", "level", "～ story", "～ storey"],
       "acceptedReadings": [
         "かい"
       ],
@@ -423,9 +449,10 @@
         "～ shop/store"
       ],
       "acceptedMeanings": [
-        "shop/store",
         "shop",
-        "store"
+        "store",
+        "shops",
+        "stores"
       ],
       "acceptedReadings": [
         "や"
@@ -440,6 +467,7 @@
       "meanings": [
         "Where"
       ],
+      "acceptedMeanings": ["What place", "Where to"],
       "acceptedReadings": [
         "どこ"
       ],
@@ -452,6 +480,7 @@
       "meanings": [
         "Welcome"
       ],
+      "acceptedMeanings": ["Welcome to our store"],
       "acceptedReadings": [
         "いらっしゃいませ"
       ],
@@ -464,6 +493,7 @@
       "meanings": [
         "Thank you very much"
       ],
+      "acceptedMeanings": ["Thank you so much", "Thanks very much", "Many thanks", "Thank you"],
       "acceptedReadings": [
         "ありがとうございます",
         "どうもありがとうございます"
@@ -478,6 +508,7 @@
       "meanings": [
         "This"
       ],
+      "acceptedMeanings": ["These", "This one"],
       "acceptedReadings": [
         "これ"
       ],
@@ -490,6 +521,7 @@
       "meanings": [
         "That (relatively close)"
       ],
+      "acceptedMeanings": ["Those (relatively close)", "That", "That one", "Over there"],
       "acceptedReadings": [
         "それ"
       ],
@@ -502,6 +534,7 @@
       "meanings": [
         "That (relatively far)"
       ],
+      "acceptedMeanings": ["Those (relatively far)", "That", "That one over there"],
       "acceptedReadings": [
         "あれ"
       ],
@@ -514,6 +547,7 @@
       "meanings": [
         "This (before a noun)"
       ],
+      "acceptedMeanings": ["This", "These"],
       "acceptedReadings": [
         "この"
       ],
@@ -527,7 +561,8 @@
         "That (before a noun; relatively close)"
       ],
       "acceptedMeanings": [
-        "That"
+        "That",
+        "Those"
       ],
       "acceptedReadings": [
         "その"
@@ -542,7 +577,8 @@
         "That (before a noun; relatively far)"
       ],
       "acceptedMeanings": [
-        "That"
+        "That",
+        "Those"
       ],
       "acceptedReadings": [
         "あの"
@@ -556,6 +592,7 @@
       "meanings": [
         "Bag"
       ],
+      "acceptedMeanings": ["Bags", "Handbag", "Handbags", "Purse", "Purses"],
       "acceptedReadings": [
         "かばん"
       ],
@@ -569,6 +606,7 @@
         "Pants",
         "Slacks"
       ],
+      "acceptedMeanings": ["Trousers", "Pair of pants", "Pair of slacks"],
       "acceptedReadings": [
         "ずぼん"
       ],
@@ -581,6 +619,7 @@
       "meanings": [
         "T-shirt"
       ],
+      "acceptedMeanings": ["T-shirts", "Tee", "Tee shirt"],
       "acceptedReadings": [
         "てぃーしゃつ"
       ],
@@ -595,6 +634,7 @@
         "Watch",
         "Clock"
       ],
+      "acceptedMeanings": ["Watches", "Clocks", "Timepiece"],
       "acceptedReadings": [
         "とけい"
       ],
@@ -608,7 +648,6 @@
         "～ yen"
       ],
       "acceptedMeanings": [
-        "yen"
       ],
       "acceptedReadings": [
         "えん"
@@ -622,6 +661,7 @@
       "meanings": [
         "How much?"
       ],
+      "acceptedMeanings": ["How much is it?", "How much does it cost?"],
       "acceptedReadings": [
         "いくら"
       ],
@@ -635,6 +675,7 @@
         "Well",
         "OK"
       ],
+      "acceptedMeanings": ["Then", "Well then", "Okay", "All right"],
       "acceptedReadings": [
         "じゃ"
       ],
@@ -683,6 +724,7 @@
       "meanings": [
         "Chicken"
       ],
+      "acceptedMeanings": ["Chickens", "Chicken meat"],
       "acceptedReadings": [
         "とりにく"
       ],
@@ -707,6 +749,7 @@
       "meanings": [
         "Vegetables"
       ],
+      "acceptedMeanings": ["Vegetable", "Veggies"],
       "acceptedReadings": [
         "やさい"
       ],
@@ -719,6 +762,7 @@
       "meanings": [
         "Strawberry"
       ],
+      "acceptedMeanings": ["Strawberries"],
       "acceptedReadings": [
         "いちご"
       ],
@@ -731,6 +775,7 @@
       "meanings": [
         "Apple"
       ],
+      "acceptedMeanings": ["Apples"],
       "acceptedReadings": [
         "りんご"
       ],
@@ -741,8 +786,9 @@
       "japanese": "料理",
       "reading": "りょうり",
       "meanings": [
-        "Dish (a type of food)"
+        "Dish"
       ],
+      "acceptedMeanings": ["Dishes", "Dish (a type of food)", "Cooking", "Cuisine"],
       "acceptedReadings": [
         "りょうり"
       ],
@@ -755,6 +801,7 @@
       "meanings": [
         "Curry"
       ],
+      "acceptedMeanings": ["Curries"],
       "acceptedReadings": [
         "かれー"
       ],
@@ -767,6 +814,7 @@
       "meanings": [
         "Soup"
       ],
+      "acceptedMeanings": ["Soups"],
       "acceptedReadings": [
         "すーぷ"
       ],
@@ -779,6 +827,7 @@
       "meanings": [
         "Pork cutlet"
       ],
+      "acceptedMeanings": ["Pork cutlets", "Tonkatsu"],
       "acceptedReadings": [
         "とんかつ"
       ],
@@ -791,6 +840,7 @@
       "meanings": [
         "Hamburger meat"
       ],
+      "acceptedMeanings": ["Hamburg steak", "Hamburger patty", "Hamburger patties"],
       "acceptedReadings": [
         "はんばーぐ"
       ],
@@ -803,6 +853,7 @@
       "meanings": [
         "Cooked rice"
       ],
+      "acceptedMeanings": ["Rice", "A meal"],
       "acceptedReadings": [
         "ごはん"
       ],
@@ -815,6 +866,7 @@
       "meanings": [
         "Rice"
       ],
+      "acceptedMeanings": ["Cooked rice", "A serving of rice"],
       "acceptedReadings": [
         "らいす"
       ],
@@ -827,6 +879,7 @@
       "meanings": [
         "Juice"
       ],
+      "acceptedMeanings": ["Fruit juice", "Juices"],
       "acceptedReadings": [
         "じゅーす"
       ],
@@ -839,6 +892,7 @@
       "meanings": [
         "Coffee"
       ],
+      "acceptedMeanings": ["Cup of coffee", "Coffees"],
       "acceptedReadings": [
         "こーひー"
       ],
@@ -851,6 +905,7 @@
       "meanings": [
         "Tea (black tea)"
       ],
+      "acceptedMeanings": ["Tea", "Black tea", "Black teas"],
       "acceptedReadings": [
         "こうちゃ"
       ],
@@ -863,6 +918,7 @@
       "meanings": [
         "Green tea"
       ],
+      "acceptedMeanings": ["Green teas", "Tea"],
       "acceptedReadings": [
         "ちゃ",
         "おちゃ"
@@ -877,6 +933,7 @@
       "meanings": [
         "Beer"
       ],
+      "acceptedMeanings": ["Beers", "A beer"],
       "acceptedReadings": [
         "びーる"
       ],
@@ -889,6 +946,7 @@
       "meanings": [
         "Wine"
       ],
+      "acceptedMeanings": ["Wines", "A glass of wine"],
       "acceptedReadings": [
         "わいん"
       ],
@@ -938,6 +996,7 @@
         "Wallet",
         "Billfold"
       ],
+      "acceptedMeanings": ["Wallets", "Billfolds"],
       "acceptedReadings": [
         "さいふ"
       ],
@@ -950,6 +1009,7 @@
       "meanings": [
         "English"
       ],
+      "acceptedMeanings": ["English language"],
       "acceptedReadings": [
         "えいご"
       ],
@@ -962,6 +1022,7 @@
       "meanings": [
         "Language identifier (e.g., Japanese)"
       ],
+      "acceptedMeanings": ["Language suffix"],
       "acceptedReadings": [
         "ご"
       ],
@@ -975,6 +1036,7 @@
       "meanings": [
         "Counter"
       ],
+      "acceptedMeanings": ["Counters", "General counter", "Counter for things"],
       "acceptedReadings": [
         "～つ"
       ],
@@ -988,6 +1050,7 @@
         "Someone",
         "Who"
       ],
+      "acceptedMeanings": ["Somebody", "Anyone"],
       "acceptedReadings": [
         "だれ"
       ],
@@ -1000,6 +1063,7 @@
       "meanings": [
         "I'd like to order now"
       ],
+      "acceptedMeanings": ["I'd like to order", "I would like to order now", "I would like to order", "I'd like to place an order", "I would like to place an order"],
       "acceptedReadings": [
         "ちゅうもんをおねがいします"
       ],
@@ -1013,6 +1077,7 @@
         "Certainly",
         "Go ahead"
       ],
+      "acceptedMeanings": ["Sure", "Please", "Here you are", "By all means"],
       "acceptedReadings": [
         "どうぞ"
       ],
@@ -1025,6 +1090,7 @@
       "meanings": [
         "This way, please"
       ],
+      "acceptedMeanings": ["Come this way, please", "Please come this way", "Right this way"],
       "acceptedReadings": [
         "こちらへどうぞ"
       ],
@@ -1037,6 +1103,7 @@
       "meanings": [
         "Menu"
       ],
+      "acceptedMeanings": ["Menus", "Food menu"],
       "acceptedReadings": [
         "めにゅー"
       ],
@@ -1049,6 +1116,7 @@
       "meanings": [
         "One moment, please"
       ],
+      "acceptedMeanings": ["Just a moment, please", "Please wait a moment", "Wait a moment, please", "Please hold on"],
       "acceptedReadings": [
         "しょうしょうおまちください"
       ],

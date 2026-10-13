@@ -12,6 +12,7 @@
         "I",
         "Me"
       ],
+      "acceptedMeanings": ["Myself"],
       "acceptedReadings": [
         "わたし"
       ],
@@ -24,6 +25,7 @@
       "meanings": [
         "Name"
       ],
+      "acceptedMeanings": ["Your name", "Name (polite)"],
       "acceptedReadings": [
         "なまえ",
         "おなまえ"
@@ -38,6 +40,7 @@
       "meanings": [
         "Country"
       ],
+      "acceptedMeanings": ["Your country", "Home country"],
       "acceptedReadings": [
         "くに",
         "おくに"
@@ -65,6 +68,7 @@
         "America",
         "USA"
       ],
+      "acceptedMeanings": ["United States", "United States of America", "US"],
       "acceptedReadings": [
         "あめりか"
       ],
@@ -101,6 +105,7 @@
       "meanings": [
         "South Korea"
       ],
+      "acceptedMeanings": ["Korea", "Republic of Korea"],
       "acceptedReadings": [
         "かんこく"
       ],
@@ -161,6 +166,7 @@
       "meanings": [
         "High school"
       ],
+      "acceptedMeanings": ["Senior high school"],
       "acceptedReadings": [
         "こうこう"
       ],
@@ -173,6 +179,7 @@
       "meanings": [
         "University"
       ],
+      "acceptedMeanings": ["College"],
       "acceptedReadings": [
         "だいがく"
       ],
@@ -185,6 +192,7 @@
       "meanings": [
         "Japanese language school"
       ],
+      "acceptedMeanings": ["School for learning Japanese"],
       "acceptedReadings": [
         "にほんごがっこう"
       ],
@@ -198,6 +206,7 @@
         "Job",
         "Occupation"
       ],
+      "acceptedMeanings": ["Work", "Profession"],
       "acceptedReadings": [
         "しごと",
         "おしごと"
@@ -212,6 +221,7 @@
       "meanings": [
         "Student"
       ],
+      "acceptedMeanings": ["Learner"],
       "acceptedReadings": [
         "がくせい"
       ],
@@ -224,6 +234,7 @@
       "meanings": [
         "Teacher (title / honorific)"
       ],
+      "acceptedMeanings": ["Sensei", "Teacher (honorific)"],
       "acceptedReadings": [
         "せんせい"
       ],
@@ -236,6 +247,7 @@
       "meanings": [
         "Teacher (profession)"
       ],
+      "acceptedMeanings": ["Instructor", "Educator"],
       "acceptedReadings": [
         "きょうし"
       ],
@@ -249,6 +261,7 @@
         "Office worker",
         "Company employee"
       ],
+      "acceptedMeanings": ["Company worker", "Corporate employee"],
       "acceptedReadings": [
         "かいしゃいん"
       ],
@@ -261,6 +274,7 @@
       "meanings": [
         "Employee (of a specific company)"
       ],
+      "acceptedMeanings": ["Company employee", "Staff member"],
       "acceptedReadings": [
         "しゃいん"
       ],
@@ -274,6 +288,7 @@
         "Mr.",
         "Ms. (honorific title)"
       ],
+      "acceptedMeanings": ["-san", "Honorific suffix", "Polite name suffix"],
       "acceptedReadings": [
         "さん"
       ],
@@ -287,6 +302,7 @@
       "meanings": [
         "Person of"
       ],
+      "acceptedMeanings": ["Person from", "Nationality suffix"],
       "acceptedReadings": [
         "じん"
       ],
@@ -301,6 +317,7 @@
         "Where",
         "Which way (formal)"
       ],
+      "acceptedMeanings": ["Where (polite)", "Which direction", "Which way"],
       "acceptedReadings": [
         "どちら"
       ],
@@ -313,6 +330,7 @@
       "meanings": [
         "Nice to meet you (when meeting for the first time)"
       ],
+      "acceptedMeanings": ["How do you do?", "Pleased to meet you"],
       "acceptedReadings": [
         "はじめまして"
       ],
@@ -326,6 +344,7 @@
         "Please treat me well",
         "Nice to meet you"
       ],
+      "acceptedMeanings": ["Please be kind to me", "I look forward to working with you"],
       "acceptedReadings": [
         "よろしくおねがいします",
         "どうぞよろしくおねがいします"
@@ -340,6 +359,7 @@
       "meanings": [
         "Likewise"
       ],
+      "acceptedMeanings": ["Same here"],
       "acceptedReadings": [
         "こちらこそ"
       ],
@@ -366,6 +386,7 @@
         "Excuse me",
         "I'm sorry"
       ],
+      "acceptedMeanings": ["Sorry", "Thank you"],
       "acceptedReadings": [
         "すみません"
       ],
@@ -379,6 +400,7 @@
         "I see",
         "Is that so?"
       ],
+      "acceptedMeanings": ["Really?", "Oh, I see"],
       "acceptedReadings": [
         "そうですか"
       ],
@@ -391,6 +413,7 @@
       "meanings": [
         "Yes"
       ],
+      "acceptedMeanings": ["Yeah"],
       "acceptedReadings": [
         "はい"
       ],
@@ -403,6 +426,7 @@
       "meanings": [
         "No"
       ],
+      "acceptedMeanings": ["Nope"],
       "acceptedReadings": [
         "いいえ"
       ],
@@ -415,6 +439,7 @@
       "meanings": [
         "Birthday"
       ],
+      "acceptedMeanings": ["Date of birth"],
       "acceptedReadings": [
         "たんじょうび"
       ],
@@ -427,6 +452,7 @@
       "meanings": [
         "Month"
       ],
+      "acceptedMeanings": ["Month of the year", "Month suffix"],
       "acceptedReadings": [
         "がつ"
       ],
@@ -440,6 +466,7 @@
       "meanings": [
         "Day"
       ],
+      "acceptedMeanings": ["Date", "Day of the month", "Day suffix"],
       "acceptedReadings": [
         "にち"
       ],
@@ -454,6 +481,7 @@
         "Age",
         "... years old"
       ],
+      "acceptedMeanings": ["Years of age"],
       "acceptedReadings": [
         "さい"
       ],
@@ -467,6 +495,7 @@
       "meanings": [
         "When"
       ],
+      "acceptedMeanings": ["What time?"],
       "acceptedReadings": [
         "いつ"
       ],
@@ -479,6 +508,7 @@
       "meanings": [
         "Hobby"
       ],
+      "acceptedMeanings": ["Pastime", "Interest"],
       "acceptedReadings": [
         "しゅみ"
       ],
@@ -504,6 +534,7 @@
       "meanings": [
         "Soccer"
       ],
+      "acceptedMeanings": ["Football"],
       "acceptedReadings": [
         "さっかー"
       ],
@@ -528,6 +559,7 @@
       "meanings": [
         "Swimming"
       ],
+      "acceptedMeanings": ["The sport of swimming"],
       "acceptedReadings": [
         "すいえい"
       ],
@@ -541,6 +573,7 @@
         "Movie",
         "Film"
       ],
+      "acceptedMeanings": ["Motion picture"],
       "acceptedReadings": [
         "えいが"
       ],
@@ -565,6 +598,7 @@
       "meanings": [
         "Reading books"
       ],
+      "acceptedMeanings": ["Reading", "Book reading"],
       "acceptedReadings": [
         "どくしょ"
       ],
@@ -578,6 +612,7 @@
         "Travel",
         "Traveling"
       ],
+      "acceptedMeanings": ["Trip", "Journey", "Travelling"],
       "acceptedReadings": [
         "りょこう"
       ],
@@ -590,6 +625,7 @@
       "meanings": [
         "Cooking"
       ],
+      "acceptedMeanings": ["Cuisine", "Cookery"],
       "acceptedReadings": [
         "りょうり"
       ],
