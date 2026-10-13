@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight, RotateCcw, Shuffle, Volume2 } from "lucide-react";
+import { toHiragana } from "wanakana";
 import { matchesKanjiAnswer, matchesMeaning, matchesReading, normalizeReading, romaji } from "@/lib/japanese";
 import { playUiSound } from "@/lib/ui-sound";
 import { loadProgress, recordAnswer, setDifficult, type ProgressStore } from "@/lib/storage/progress";
@@ -154,6 +155,21 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
     setProgress(updated);
     setResults((value) => ({ ...value, [correct ? "correct" : "incorrect"]: value[correct ? "correct" : "incorrect"] + 1, mistakes: correct ? value.mistakes : [...value.mistakes, current] }));
   };
+  const updateReadingAnswer = (input: HTMLInputElement) => {
+    const value = input.value;
+    if (composingRef.current) {
+      setAnswer(value);
+      return;
+    }
+    const selectionStart = input.selectionStart ?? value.length;
+    const selectionEnd = input.selectionEnd ?? selectionStart;
+    const options = { IMEMode: "toHiragana" as const };
+    const converted = toHiragana(value, options);
+    const nextStart = toHiragana(value.slice(0, selectionStart), options).length;
+    const nextEnd = toHiragana(value.slice(0, selectionEnd), options).length;
+    setAnswer(converted);
+    window.requestAnimationFrame(() => inputRef.current?.setSelectionRange(nextStart, nextEnd));
+  };
   const flagDifficult = () => {
     if (!current || results.difficult.some((item) => item.key === current.key)) return;
     setDifficult(current.key, true);
@@ -178,7 +194,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
           <form className="answer-form" onSubmit={(event) => { event.preventDefault(); if (!(event.nativeEvent as Event & { isComposing?: boolean }).isComposing && !composingRef.current) submit(); }}>
             <label htmlFor="reading-answer">YOUR ANSWER <span>{vocabularyQuiz ? "ENGLISH" : "HIRAGANA / ROMAJI + ENGLISH"}</span></label>
             <div className={`answer-input-wrap ${checked === null ? "" : current?.acceptedAnswerPairs ? checked ? "input-correct" : "input-wrong" : matchesReading(answer, current?.acceptedReadings ?? []) ? "input-correct" : "input-wrong"}`}>
-              <input ref={inputRef} id="reading-answer" aria-label={vocabularyQuiz ? "English meaning" : "Hiragana reading; Romaji accepted"} autoComplete="off" autoCapitalize="off" spellCheck={vocabularyQuiz} lang={vocabularyQuiz ? "en" : "ja"} inputMode="text" placeholder={vocabularyQuiz ? "Type the meaning…" : "Type Hiragana or Romaji…"} value={answer} onChange={(event) => setAnswer(event.target.value)} onCompositionStart={() => { composingRef.current = true; }} onCompositionEnd={() => { composingRef.current = false; }} disabled={checked !== null} />
+              <input ref={inputRef} id="reading-answer" aria-label={vocabularyQuiz ? "English meaning" : "Hiragana reading; Romaji accepted"} autoComplete="off" autoCapitalize="off" spellCheck={vocabularyQuiz} lang={vocabularyQuiz ? "en" : "ja"} inputMode="text" placeholder={vocabularyQuiz ? "Type the meaning…" : "Type Hiragana or Romaji…"} value={answer} onChange={(event) => vocabularyQuiz ? setAnswer(event.target.value) : updateReadingAnswer(event.currentTarget)} onCompositionStart={() => { composingRef.current = true; }} onCompositionEnd={() => { composingRef.current = false; }} disabled={checked !== null} />
               <span>↵</span>
             </div>
             {!vocabularyQuiz && <div className={`answer-input-wrap meaning-answer-wrap ${checked === null ? "" : current?.acceptedAnswerPairs ? checked ? "input-correct" : "input-wrong" : matchesMeaning(meaningAnswer, current?.meanings ?? [], current?.acceptedMeanings) ? "input-correct" : "input-wrong"}`}>
