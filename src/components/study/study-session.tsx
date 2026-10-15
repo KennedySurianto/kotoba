@@ -12,6 +12,23 @@ import type { StudyItem } from "@/lib/study/types";
 
 type Mode = "learn" | "flashcards" | "quiz";
 
+const locationAnswerDetails: Record<string, { meaning: "here" | "there"; formal: boolean; distance: "close" | "far"; optionalDistance?: boolean }> = {
+  "ここ": { meaning: "here", formal: false, distance: "close", optionalDistance: true },
+  "こちら": { meaning: "here", formal: true, distance: "close", optionalDistance: true },
+  "そこ": { meaning: "there", formal: false, distance: "close", optionalDistance: true },
+  "そちら": { meaning: "there", formal: true, distance: "close", optionalDistance: true },
+  "あそこ": { meaning: "there", formal: false, distance: "far", optionalDistance: true },
+  "あちら": { meaning: "there", formal: true, distance: "far", optionalDistance: true },
+};
+const demonstrativeAnswerDetails: Record<string, { meaning: "this" | "that"; beforeNoun: boolean; distance: "close" | "far"; optionalDistance?: boolean }> = {
+  "これ": { meaning: "this", beforeNoun: false, distance: "close", optionalDistance: true },
+  "それ": { meaning: "that", beforeNoun: false, distance: "close", optionalDistance: true },
+  "あれ": { meaning: "that", beforeNoun: false, distance: "far", optionalDistance: true },
+  "この": { meaning: "this", beforeNoun: true, distance: "close", optionalDistance: true },
+  "その": { meaning: "that", beforeNoun: true, distance: "close", optionalDistance: true },
+  "あの": { meaning: "that", beforeNoun: true, distance: "far", optionalDistance: true },
+};
+
 const kanjiReadingSplits: Record<string, string[]> = {
   "喫煙所": ["きつ", "えん", "じょ"],
   "喫茶店": ["きっ", "さ", "てん"],
@@ -139,6 +156,9 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   const [flashDirection, setFlashDirection] = useState<"primary" | "reverse" | "meaning" | "mixed">("primary");
   const [answer, setAnswer] = useState("");
   const [meaningAnswer, setMeaningAnswer] = useState("");
+  const [formalAnswer, setFormalAnswer] = useState(false);
+  const [beforeNounAnswer, setBeforeNounAnswer] = useState(false);
+  const [distanceAnswer, setDistanceAnswer] = useState<"close" | "far" | "">("");
   const [checked, setChecked] = useState<boolean | null>(null);
   const [results, setResults] = useState<{ correct: number; incorrect: number; skipped: number; mistakes: StudyItem[]; difficult: StudyItem[] }>({ correct: 0, incorrect: 0, skipped: 0, mistakes: [], difficult: [] });
   const [finished, setFinished] = useState(false);
@@ -152,6 +172,9 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   const current = items[index];
   const vocabularyQuiz = mode === "quiz" && subject === "vocabulary";
   const kanjiInVocabulary = vocabularyQuiz && Boolean(current?.japanese.match(/\p{Script=Han}/u));
+  const locationAnswer = vocabularyQuiz ? locationAnswerDetails[current?.japanese ?? ""] : undefined;
+  const demonstrativeAnswer = vocabularyQuiz ? demonstrativeAnswerDetails[current?.japanese ?? ""] : undefined;
+  const specialMeaningAnswer = locationAnswer?.meaning ?? demonstrativeAnswer?.meaning;
   const activeDirection = flashDirection === "mixed" ? ((index % 2 === 0) ? "primary" : (subject === "vocabulary" ? "reverse" : "meaning")) : flashDirection;
   const focusMode = mode !== "learn";
   const subjectPath = `/chapter/${chapterId}/${subject}`;
@@ -174,6 +197,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
     }
     setAnswer("");
     setMeaningAnswer("");
+    setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer("");
     setChecked(null);
   };
 
@@ -196,7 +220,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   useEffect(() => { if (mode === "quiz" && checked === null && !finished) inputRef.current?.focus(); }, [index, mode, checked, finished]);
   const next = useCallback(() => {
     if (index >= items.length - 1) setFinished(true);
-    else { setIndex((value) => value + 1); setAnswer(""); setMeaningAnswer(""); setChecked(null); setRevealed(false); }
+    else { setIndex((value) => value + 1); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setChecked(null); setRevealed(false); }
   }, [index, items.length]);
 
   useEffect(() => {
@@ -216,11 +240,11 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   }, [mode, next, subjectPath, checked, router]);
 
   const emptyResults = () => ({ correct: 0, incorrect: 0, skipped: 0, mistakes: [] as StudyItem[], difficult: [] as StudyItem[] });
-  const shuffle = () => { setItems((value) => [...value].sort(() => Math.random() - 0.5)); setIndex(0); setFinished(false); setResults(emptyResults()); setRevealed(false); setChecked(null); setAnswer(""); setMeaningAnswer(""); };
+  const shuffle = () => { setItems((value) => [...value].sort(() => Math.random() - 0.5)); setIndex(0); setFinished(false); setResults(emptyResults()); setRevealed(false); setChecked(null); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); };
   const restart = () => {
     smartOriginalRemaining.current = smartShuffle ? quizSourceItems : null;
     setItems(smartShuffle ? smartShuffleItems(quizSourceItems, progress) : quizSourceItems);
-    setIndex(0); setFinished(false); setResults(emptyResults()); setChecked(null); setAnswer(""); setMeaningAnswer(""); setRevealed(false);
+    setIndex(0); setFinished(false); setResults(emptyResults()); setChecked(null); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setRevealed(false);
   };
   const mark = (correct: boolean, difficult = false) => {
     const updated = recordAnswer(current.key, correct);
@@ -231,8 +255,13 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   };
   const submit = () => {
     if (!current || checked !== null) return;
+    const specialAnswerCorrect = specialMeaningAnswer
+      ? matchesMeaning(answer, [specialMeaningAnswer])
+        && (locationAnswer ? formalAnswer === locationAnswer.formal : beforeNounAnswer === demonstrativeAnswer?.beforeNoun)
+        && (distanceAnswer === "" ? Boolean(locationAnswer?.optionalDistance || demonstrativeAnswer?.optionalDistance) : distanceAnswer === (locationAnswer?.distance ?? demonstrativeAnswer?.distance))
+      : false;
     const correct = vocabularyQuiz
-      ? matchesMeaning(answer, current.meanings, current.acceptedMeanings)
+      ? specialMeaningAnswer ? specialAnswerCorrect : matchesMeaning(answer, current.meanings, current.acceptedMeanings)
       : matchesKanjiAnswer(answer, meaningAnswer, current);
     playUiSound(correct ? "correct" : "incorrect");
     setChecked(correct);
@@ -268,7 +297,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
 
   return <main className={`study-shell ${focusMode ? "focus-mode" : "learn-mode"}`}>
     <div className="study-topline"><Link href={subjectPath} className="study-exit"><ArrowLeft size={15} /><span>{chapterTitle} <i>/</i> {subject}</span></Link><span className="study-mode-label">{mode === "quiz" ? vocabularyQuiz ? "MEANING PRACTICE" : "READING PRACTICE" : mode === "flashcards" ? "FLASHCARDS" : "STUDY LIBRARY"}<b> · </b> {chapterId}</span><span className="study-mode-right">{focusMode && <span>FOCUS MODE</span>}<Link href={`/chapter/${chapterId}`}>EXIT <span>×</span></Link></span></div>
-    {mode === "learn" ? <LearnView items={items} subject={subject} progress={progress} showRomaji={showRomaji} setShowRomaji={setShowRomaji} chapterId={chapterId} dueCount={dueItems.length} onShuffle={shuffle} /> : finished ? <Results results={results} itemsLength={items.length} restart={restart} mistakesOnly={() => { smartOriginalRemaining.current = smartShuffle ? results.mistakes : null; setItems(smartShuffle ? smartShuffleItems(results.mistakes, progress) : results.mistakes); setIndex(0); setFinished(false); setResults(emptyResults()); setAnswer(""); setMeaningAnswer(""); setChecked(null); setRevealed(false); }} /> : <>
+    {mode === "learn" ? <LearnView items={items} subject={subject} progress={progress} showRomaji={showRomaji} setShowRomaji={setShowRomaji} chapterId={chapterId} dueCount={dueItems.length} onShuffle={shuffle} /> : finished ? <Results results={results} itemsLength={items.length} restart={restart} mistakesOnly={() => { smartOriginalRemaining.current = smartShuffle ? results.mistakes : null; setItems(smartShuffle ? smartShuffleItems(results.mistakes, progress) : results.mistakes); setIndex(0); setFinished(false); setResults(emptyResults()); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setChecked(null); setRevealed(false); }} /> : <>
       <div className={`session-progress ${mode === "quiz" ? "with-smart-shuffle" : ""}`}><span>{String(index + 1).padStart(2, "0")} <i>/</i> {String(items.length).padStart(2, "0")}</span><div><i style={{ width: `${((index + 1) / items.length) * 100}%` }} /></div>{mode === "quiz" && <button type="button" className={`smart-shuffle-toggle ${smartShuffle ? "is-active" : ""}`} aria-pressed={smartShuffle} title="Prioritize missed and difficult cards; shuffle ties." disabled={checked !== null} onClick={toggleSmartShuffle}><Shuffle size={12} /> SMART {smartShuffle ? "ON" : "OFF"}</button>}<button onClick={skip}>Skip <ArrowRight size={13} /></button></div>
       <div className="study-card-stage" key={current?.key}>
         <div className="study-context">{current?.kanji && <span className="kanji-chip">KANJI {current.kanji}</span>}<span>{current?.category ?? (current?.kanji ? `${current.strokeCount} STROKES` : "CHAPTER WORD")}</span><button className="audio-button" onClick={speak} aria-label="Play Japanese pronunciation"><Volume2 size={16} /></button></div>
@@ -278,14 +307,15 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
         </div> : <div className="quiz-answer-area">
           <form className="answer-form" onSubmit={(event) => { event.preventDefault(); if (!(event.nativeEvent as Event & { isComposing?: boolean }).isComposing && !composingRef.current) submit(); }}>
             <label htmlFor="reading-answer">YOUR ANSWER <span>{vocabularyQuiz ? "ENGLISH" : "HIRAGANA / ROMAJI + ENGLISH"}</span></label>
-            <div className={`answer-input-wrap ${checked === null ? "" : current?.acceptedAnswerPairs ? checked ? "input-correct" : "input-wrong" : matchesReading(answer, current?.acceptedReadings ?? []) ? "input-correct" : "input-wrong"}`}>
+            <div className={`answer-input-wrap ${checked === null ? "" : vocabularyQuiz ? checked ? "input-correct" : "input-wrong" : current?.acceptedAnswerPairs ? checked ? "input-correct" : "input-wrong" : matchesReading(answer, current?.acceptedReadings ?? []) ? "input-correct" : "input-wrong"}`}>
               <input ref={inputRef} id="reading-answer" aria-label={vocabularyQuiz ? "English meaning" : "Hiragana reading; Romaji accepted"} autoComplete="off" autoCapitalize="off" spellCheck={vocabularyQuiz} lang={vocabularyQuiz ? "en" : "ja"} inputMode="text" placeholder={vocabularyQuiz ? "Type the meaning…" : "Type Hiragana or Romaji…"} value={answer} onChange={(event) => vocabularyQuiz ? setAnswer(event.target.value) : updateReadingAnswer(event.currentTarget)} onCompositionStart={() => { composingRef.current = true; }} onCompositionEnd={() => { composingRef.current = false; }} disabled={checked !== null} />
               <span>↵</span>
             </div>
             {!vocabularyQuiz && <div className={`answer-input-wrap meaning-answer-wrap ${checked === null ? "" : current?.acceptedAnswerPairs ? checked ? "input-correct" : "input-wrong" : matchesMeaning(meaningAnswer, current?.meanings ?? [], current?.acceptedMeanings) ? "input-correct" : "input-wrong"}`}>
               <input id="meaning-answer" aria-label="English meaning (Kotoba IME: Alphanumeric)" autoComplete="off" autoCapitalize="off" spellCheck lang="en" inputMode="text" placeholder="Type the English meaning…" value={meaningAnswer} onChange={(event) => setMeaningAnswer(event.target.value)} disabled={checked !== null} />
             </div>}
-            {checked === null ? <button type="submit" className="button button-dark check-button" disabled={!answer.trim() || (!vocabularyQuiz && !meaningAnswer.trim())}>Check answer <ArrowRight size={15} /></button> : <div className={`quiz-feedback ${checked ? "feedback-correct" : "feedback-wrong"}`}><div><strong>{checked ? "Correct." : "Not quite."}</strong><span>{vocabularyQuiz ? current?.meanings.join(" · ") : current?.acceptedAnswerPairs ? current.acceptedAnswerPairs.map((pair) => `${pair.acceptedReadings.join(" / ")} (${pair.acceptedReadings.map(romaji).join(" / ")}) — ${pair.meanings.join(" / ")}`).join(" · ") : <>{current?.reading} <i>·</i> {romaji(current?.reading ?? "")} <i>·</i> {current?.meanings.join(" · ")}</>}</span></div><button type="button" className="flag-difficult" onClick={flagDifficult}>{results.difficult.some((item) => item.key === current?.key) ? "Marked difficult" : "Mark difficult"}</button><button type="button" onClick={next}>Continue <ArrowRight size={15} /></button></div>}
+            {(locationAnswer || demonstrativeAnswer) && <SpecialMeaningControls location={locationAnswer} demonstrative={demonstrativeAnswer} formal={formalAnswer} setFormal={setFormalAnswer} beforeNoun={beforeNounAnswer} setBeforeNoun={setBeforeNounAnswer} distance={distanceAnswer} setDistance={setDistanceAnswer} disabled={checked !== null} />}
+            {checked === null ? <button type="submit" className="button button-dark check-button" disabled={!answer.trim() || (!vocabularyQuiz && !meaningAnswer.trim()) || Boolean((locationAnswer || demonstrativeAnswer) && !distanceAnswer && !(locationAnswer?.optionalDistance || demonstrativeAnswer?.optionalDistance))}>Check answer <ArrowRight size={15} /></button> : <div className={`quiz-feedback ${checked ? "feedback-correct" : "feedback-wrong"}`}><div><strong>{checked ? "Correct." : "Not quite."}</strong><span>{vocabularyQuiz ? current?.meanings.join(" · ") : current?.acceptedAnswerPairs ? current.acceptedAnswerPairs.map((pair) => `${pair.acceptedReadings.join(" / ")} (${pair.acceptedReadings.map(romaji).join(" / ")}) — ${pair.meanings.join(" / ")}`).join(" · ") : <>{current?.reading} <i>·</i> {romaji(current?.reading ?? "")} <i>·</i> {current?.meanings.join(" · ")}</>}</span></div><button type="button" className="flag-difficult" onClick={flagDifficult}>{results.difficult.some((item) => item.key === current?.key) ? "Marked difficult" : "Mark difficult"}</button><button type="button" onClick={next}>Continue <ArrowRight size={15} /></button></div>}
           </form>
           <p className="answer-hint">{vocabularyQuiz ? "Enter the English meaning. Hiragana readings appear above kanji." : "Enter the reading in Hiragana or Romaji, plus one of the English meanings. Katakana is accepted too."}</p>
         </div>}
@@ -295,6 +325,26 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
       <div className="study-footer"><span>{mode === "quiz" ? "TAKE YOUR TIME · ACCURACY OVER SPEED" : "A GOOD GUESS IS STILL PRACTICE"}</span><span>ENTER {mode === "quiz" && checked !== null ? "TO CONTINUE" : "TO CHECK"}</span></div>
     </>}
   </main>;
+}
+
+function SpecialMeaningControls({ location, demonstrative, formal, setFormal, beforeNoun, setBeforeNoun, distance, setDistance, disabled }: {
+  location?: (typeof locationAnswerDetails)[string];
+  demonstrative?: (typeof demonstrativeAnswerDetails)[string];
+  formal: boolean; setFormal: (value: boolean) => void;
+  beforeNoun: boolean; setBeforeNoun: (value: boolean) => void;
+  distance: "close" | "far" | ""; setDistance: (value: "close" | "far" | "") => void;
+  disabled: boolean;
+}) {
+  const optionalDistance = Boolean(location?.optionalDistance || demonstrative?.optionalDistance);
+  return <div className="special-meaning-controls">
+    {location && <label className="special-checkbox"><input type="checkbox" checked={formal} onChange={(event) => setFormal(event.target.checked)} disabled={disabled} /> <span>Formal</span></label>}
+    {demonstrative && <label className="special-checkbox"><input type="checkbox" checked={beforeNoun} onChange={(event) => setBeforeNoun(event.target.checked)} disabled={disabled} /> <span>Before a noun</span></label>}
+    <fieldset className="special-distance"><legend>DISTANCE{optionalDistance ? " · OPTIONAL" : ""}</legend>
+      {optionalDistance && <label><input type="radio" name="special-distance" value="" checked={distance === ""} onChange={() => setDistance("")} disabled={disabled} /> <span>Unspecified</span></label>}
+      <label><input type="radio" name="special-distance" value="close" checked={distance === "close"} onChange={() => setDistance("close")} disabled={disabled} /> <span>Relatively close</span></label>
+      <label><input type="radio" name="special-distance" value="far" checked={distance === "far"} onChange={() => setDistance("far")} disabled={disabled} /> <span>Relatively far</span></label>
+    </fieldset>
+  </div>;
 }
 
 function LearnView({ items, subject, progress, showRomaji, setShowRomaji, chapterId, dueCount, onShuffle }: { items: StudyItem[]; subject: string; progress: ProgressStore; showRomaji: boolean; setShowRomaji: (value: boolean) => void; chapterId: string; dueCount: number; onShuffle: () => void }) {
