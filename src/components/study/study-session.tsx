@@ -174,6 +174,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   const [quizBaseItems, setQuizBaseItems] = useState<StudyItem[] | null>(null);
   const [progress, setProgress] = useState<ProgressStore>({ cards: {}, quizStats: { completedRuns: 0, correctAnswers: 0, completedRunIds: [] }, updatedAt: "" });
   const [quizRunId, setQuizRunId] = useState<string | null>(null);
+  const [quizCountsAsSession, setQuizCountsAsSession] = useState(true);
   const [showRomaji, setShowRomaji] = useState(false);
   const [smartShuffle, setSmartShuffle] = useState(mode === "quiz");
   const smartOriginalRemaining = useRef<StudyItem[] | null>(null);
@@ -265,6 +266,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
     saveQuizSession({
       id: href,
       runId: quizRunId ?? undefined,
+      countsAsSession: quizCountsAsSession,
       href,
       chapterId,
       chapterTitle,
@@ -281,11 +283,11 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
       smartShuffle,
       updatedAt: new Date().toISOString(),
     });
-  }, [mode, quizSessionStatus, quizBaseItems, finished, items, index, answer, meaningAnswer, formalAnswer, beforeNounAnswer, distanceAnswer, checked, results, smartShuffle, chapterId, chapterTitle, subject, quizRunId]);
+  }, [mode, quizSessionStatus, quizBaseItems, finished, items, index, answer, meaningAnswer, formalAnswer, beforeNounAnswer, distanceAnswer, checked, results, smartShuffle, chapterId, chapterTitle, subject, quizRunId, quizCountsAsSession]);
   useEffect(() => {
-    if (mode !== "quiz" || !finished || !quizRunId) return;
+    if (mode !== "quiz" || !finished || !quizRunId || !quizCountsAsSession) return;
     recordCompletedQuiz(quizRunId);
-  }, [mode, finished, quizRunId]);
+  }, [mode, finished, quizRunId, quizCountsAsSession]);
   const next = useCallback(() => {
     if (index >= items.length - 1) setFinished(true);
     else { setIndex((value) => value + 1); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setChecked(null); setRevealed(false); }
@@ -310,7 +312,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   const emptyResults = () => ({ correct: 0, incorrect: 0, skipped: 0, mistakes: [] as StudyItem[], difficult: [] as StudyItem[] });
   const shuffle = () => { setItems((value) => [...value].sort(() => Math.random() - 0.5)); setIndex(0); setFinished(false); setResults(emptyResults()); setRevealed(false); setChecked(null); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); };
   const restart = () => {
-    if (mode === "quiz") setQuizRunId(createQuizRunId());
+    if (mode === "quiz") { setQuizRunId(createQuizRunId()); setQuizCountsAsSession(true); }
     smartOriginalRemaining.current = smartShuffle ? quizSourceItems : null;
     setItems(smartShuffle ? smartShuffleItems(quizSourceItems, progress) : quizSourceItems);
     setIndex(0); setFinished(false); setResults(emptyResults()); setChecked(null); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setRevealed(false);
@@ -387,6 +389,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
     });
     setSmartShuffle(pendingQuizSession.smartShuffle);
     setQuizRunId(pendingQuizSession.runId ?? createQuizRunId());
+    setQuizCountsAsSession(pendingQuizSession.countsAsSession ?? true);
     smartOriginalRemaining.current = null;
     setFinished(false);
     setPendingQuizSession(null);
@@ -398,6 +401,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
     removeQuizSession(href);
     setItems(smartShuffleItems(quizBaseItems, progress));
     setQuizRunId(createQuizRunId());
+    setQuizCountsAsSession(true);
     setIndex(0);
     setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer("");
     setChecked(null); setResults(emptyResults()); setFinished(false); setSmartShuffle(true);
@@ -429,7 +433,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
 
   return <main className={`study-shell ${focusMode ? "focus-mode" : "learn-mode"}`}>
     <div className="study-topline"><Link href={subjectPath} className="study-exit"><ArrowLeft size={15} /><span>{chapterTitle} <i>/</i> {subject}</span></Link><span className="study-mode-label">{mode === "quiz" ? vocabularyQuiz ? "MEANING PRACTICE" : "READING PRACTICE" : mode === "flashcards" ? "FLASHCARDS" : "STUDY LIBRARY"}<b> · </b> {chapterId}</span><span className="study-mode-right">{focusMode && <span>FOCUS MODE</span>}<Link href={`/chapter/${chapterId}`} onClick={confirmQuizExit}>EXIT <span>×</span></Link></span></div>
-    {mode === "learn" ? <LearnView items={items} subject={subject} progress={progress} showRomaji={showRomaji} setShowRomaji={setShowRomaji} chapterId={chapterId} dueCount={dueItems.length} onShuffle={shuffle} /> : finished ? <Results results={results} itemsLength={items.length} restart={restart} mistakesOnly={() => { setQuizRunId(createQuizRunId()); smartOriginalRemaining.current = smartShuffle ? results.mistakes : null; setItems(smartShuffle ? smartShuffleItems(results.mistakes, progress) : results.mistakes); setIndex(0); setFinished(false); setResults(emptyResults()); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setChecked(null); setRevealed(false); }} /> : <>
+    {mode === "learn" ? <LearnView items={items} subject={subject} progress={progress} showRomaji={showRomaji} setShowRomaji={setShowRomaji} chapterId={chapterId} dueCount={dueItems.length} onShuffle={shuffle} /> : finished ? <Results results={results} itemsLength={items.length} restart={restart} mistakesOnly={() => { setQuizRunId(createQuizRunId()); setQuizCountsAsSession(false); smartOriginalRemaining.current = smartShuffle ? results.mistakes : null; setItems(smartShuffle ? smartShuffleItems(results.mistakes, progress) : results.mistakes); setIndex(0); setFinished(false); setResults(emptyResults()); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setChecked(null); setRevealed(false); }} /> : <>
       <div className={`session-progress ${mode === "quiz" ? "with-smart-shuffle" : ""}`}><span>{String(index + 1).padStart(2, "0")} <i>/</i> {String(items.length).padStart(2, "0")}</span><div><i style={{ width: `${((index + 1) / items.length) * 100}%` }} /></div>{mode === "quiz" && <button type="button" className={`smart-shuffle-toggle ${smartShuffle ? "is-active" : ""}`} aria-pressed={smartShuffle} title="Prioritize missed and difficult cards; shuffle ties." disabled={checked !== null} onClick={toggleSmartShuffle}><Shuffle size={12} /> SMART {smartShuffle ? "ON" : "OFF"}</button>}<button onClick={skip}>Skip <ArrowRight size={13} /></button></div>
       <div className="study-card-stage" key={current?.key}>
         <div className="study-context">{current?.kanji && <span className="kanji-chip">KANJI {current.kanji}</span>}<span>{current?.category ?? (current?.kanji ? `${current.strokeCount} STROKES` : "CHAPTER WORD")}</span><button className="audio-button" onClick={speak} aria-label="Play Japanese pronunciation"><Volume2 size={16} /></button></div>

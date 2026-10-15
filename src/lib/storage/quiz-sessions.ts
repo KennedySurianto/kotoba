@@ -1,5 +1,6 @@
 export type SavedQuizSession = {
   runId?: string;
+  countsAsSession?: boolean;
   id: string;
   href: string;
   chapterId: string;
