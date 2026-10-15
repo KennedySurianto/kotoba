@@ -1021,9 +1021,9 @@
       "japanese": "～語",
       "reading": "ご",
       "meanings": [
-        "Language identifier (e.g., Japanese)"
+        "Language identifier"
       ],
-      "acceptedMeanings": ["Language suffix"],
+      "acceptedMeanings": ["Language", "Language suffix"],
       "acceptedReadings": [
         "ご"
       ],
