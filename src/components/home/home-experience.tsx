@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, CirclePlay, Download, RotateCcw, Upload } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, CirclePlay, Download, Upload } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Chapter } from "@/lib/chapters/schema";
 import { exportProgress, importProgress, loadProgress, type ProgressStore } from "@/lib/storage/progress";
+import { getLatestQuizSession, type SavedQuizSession } from "@/lib/storage/quiz-sessions";
+import { getLastStudyActivity, type StudyActivity } from "@/lib/storage/study-activity";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,7 +20,9 @@ const methodSteps = [
   { title: "Come back over time", description: "Your browser saves progress and brings cards back when they are due." },
 ];
 export function HomeExperience({ chapters }: { chapters: Chapter[] }) {
-  const [progress, setProgress] = useState<ProgressStore>({ cards: {}, updatedAt: "" });
+  const [progress, setProgress] = useState<ProgressStore>({ cards: {}, quizStats: { completedRuns: 0, correctAnswers: 0, completedRunIds: [] }, updatedAt: "" });
+  const [ongoingQuiz, setOngoingQuiz] = useState<SavedQuizSession | null>(null);
+  const [lastStudyActivity, setLastStudyActivity] = useState<StudyActivity | null>(null);
   const [activeMethodStep, setActiveMethodStep] = useState(0);
   const activeMethodStepRef = useRef(0);
   const pageRef = useRef<HTMLElement>(null);
@@ -34,8 +38,10 @@ export function HomeExperience({ chapters }: { chapters: Chapter[] }) {
   }, [chapters]);
   const [heroFigure, setHeroFigure] = useState<{ character: string; meaning: string } | null>(null);
   useEffect(() => {
-    const timer = window.setTimeout(() => setProgress(loadProgress()), 0);
-    return () => window.clearTimeout(timer);
+    const refreshLocalState = () => { setProgress(loadProgress()); setOngoingQuiz(getLatestQuizSession()); setLastStudyActivity(getLastStudyActivity()); };
+    const timer = window.setTimeout(refreshLocalState, 0);
+    window.addEventListener("storage", refreshLocalState);
+    return () => { window.clearTimeout(timer); window.removeEventListener("storage", refreshLocalState); };
   }, []);
   useEffect(() => {
     if (heroFigures.length === 0) return;
@@ -79,16 +85,16 @@ export function HomeExperience({ chapters }: { chapters: Chapter[] }) {
     }, pageRef);
     return () => context.revert();
   }, [chapters.length]);
-  const values = Object.values(progress.cards);
-  const totalAnswers = values.reduce((sum, item) => sum + item.correct + item.incorrect, 0);
-  const mastered = values.filter((item) => item.mastered).length;
-  const due = values.filter((item) => item.nextReview && new Date(item.nextReview) <= new Date()).length;
   const firstChapter = chapters[0];
-  const dueEntries = Object.entries(progress.cards).filter(([, item]) => item.nextReview && new Date(item.nextReview) <= new Date());
-  const firstDue = dueEntries.find(([key]) => chapters.some((chapter) => key.startsWith(`${chapter.id}:`)))?.[0];
-  const [dueChapterId, dueType] = firstDue?.split(":") ?? [];
-  const dueSubject = dueType === "k" ? "kanji" : "vocabulary";
-  const dueInCollection = dueChapterId && dueType ? dueEntries.filter(([key]) => key.startsWith(`${dueChapterId}:${dueType}:`)).length : 0;
+  const mostRecentAnsweredCard = Object.entries(progress.cards)
+    .filter(([, card]) => card.lastStudied)
+    .sort(([, a], [, b]) => (b.lastStudied ?? "").localeCompare(a.lastStudied ?? ""))[0];
+  const answeredChapterId = mostRecentAnsweredCard?.[0].split(":")[0];
+  const answeredChapter = chapters.find((chapter) => chapter.id === answeredChapterId);
+  const activityChapter = chapters.find((chapter) => chapter.id === lastStudyActivity?.chapterId);
+  const answeredAt = mostRecentAnsweredCard?.[1].lastStudied ?? "";
+  const activityIsNewer = Boolean(activityChapter && lastStudyActivity && lastStudyActivity.updatedAt >= answeredAt);
+  const lastChapter = activityIsNewer ? activityChapter : answeredChapter ?? activityChapter ?? firstChapter;
   const downloadBackup = () => {
     const url = URL.createObjectURL(new Blob([exportProgress()], { type: "application/json" }));
     const anchor = document.createElement("a"); anchor.href = url; anchor.download = "kotoba-progress.json"; anchor.click(); URL.revokeObjectURL(url);
@@ -150,7 +156,18 @@ export function HomeExperience({ chapters }: { chapters: Chapter[] }) {
       <div className="collection-foot"><span>{String(chapters.length).padStart(2, "0")} CHAPTERS IN YOUR COLLECTION</span><span>ADDED AT YOUR OWN PACE <span className="red-dot">●</span></span></div>
     </div></section>
 
-    <section className="practice-section wrap"><div className="practice-heading"><p className="eyebrow"><span className="eyebrow-line" />A PRACTICE THAT REMEMBERS</p><h2>Progress, at <em>your pace.</em></h2></div><div className="stats-grid"><div className="stat-cell"><span className="stat-label"><BookOpen size={13} /> STUDY SESSIONS</span><strong>{String(totalAnswers).padStart(2, "0")}</strong><span className="stat-foot">answers practiced</span></div><div className="stat-cell"><span className="stat-label"><CirclePlay size={13} /> WORDS MASTERED</span><strong>{String(mastered).padStart(2, "0")}</strong><span className="stat-foot">ready to recall</span></div><div className="stat-cell"><span className="stat-label"><RotateCcw size={13} /> REVIEW DUE</span><strong>{String(due).padStart(2, "0")}</strong><span className="stat-foot">waiting for another look</span></div><div className="continue-cell">{firstChapter ? <><span className="stat-label">PICK UP WHERE YOU LEFT OFF</span><p>{firstChapter.titleJapanese}<br /><strong>{firstChapter.title}</strong></p><Link className="text-link" href={`/chapter/${firstChapter.id}`}>Continue learning <ArrowRight size={15} /></Link>{dueChapterId && <Link className="text-link due-link" href={`/chapter/${dueChapterId}/study/${dueSubject}/flashcards?review=due`}>Review due cards ({dueInCollection}) <ArrowRight size={15} /></Link>}</> : <span className="stat-foot">Your next study session will appear here.</span>}</div></div><div className="progress-backup"><span>YOUR PRACTICE LIVES IN THIS BROWSER.</span><div><button onClick={downloadBackup}><Download size={13} /> Export backup</button><button onClick={() => backupInput.current?.click()}><Upload size={13} /> Import backup</button><input ref={backupInput} type="file" accept="application/json,.json" hidden onChange={(event) => restoreBackup(event.target.files?.[0])} /></div></div><p className="backup-message" role="status">{backupMessage}</p><p className="local-note">Your progress is saved in this browser, on this device.</p></section>
+    <section className="practice-section wrap">
+      <div className="practice-heading"><p className="eyebrow"><span className="eyebrow-line" />A PRACTICE THAT REMEMBERS</p><h2>Progress, at <em>your pace.</em></h2></div>
+      <div className="stats-grid">
+        <div className="stat-cell"><span className="stat-label"><CirclePlay size={13} /> QUIZ SESSIONS</span><strong>{String(progress.quizStats.completedRuns).padStart(2, "0")}</strong><span className="stat-foot">quizzes completed</span></div>
+        <div className="stat-cell"><span className="stat-label"><CirclePlay size={13} /> CORRECT QUIZ ANSWERS</span><strong>{String(progress.quizStats.correctAnswers).padStart(2, "0")}</strong><span className="stat-foot">answered correctly</span></div>
+        <div className="continue-cell">
+          {ongoingQuiz ? <><span className="stat-label">QUIZ IN PROGRESS</span><p>{ongoingQuiz.chapterTitle}<br /><strong>{ongoingQuiz.subject} · {ongoingQuiz.chapterId}</strong></p><Link className="text-link" href={ongoingQuiz.href}>Resume quiz · {Math.min(ongoingQuiz.index + 1, ongoingQuiz.itemKeys.length)}/{ongoingQuiz.itemKeys.length} <ArrowRight size={15} /></Link></> : lastChapter ? <><span className="stat-label">{activityChapter || answeredChapter ? "PICK UP WHERE YOU LEFT OFF" : "START WHERE YOU ARE"}</span><p>{lastChapter.titleJapanese}<br /><strong>{lastChapter.title}</strong></p><Link className="text-link" href={`/chapter/${lastChapter.id}`}>Choose a study mode <ArrowRight size={15} /></Link></> : <span className="stat-foot">Your next study session will appear here.</span>}
+        </div>
+      </div>
+      <div className="progress-backup"><span>YOUR PRACTICE LIVES IN THIS BROWSER.</span><div><button onClick={downloadBackup}><Download size={13} /> Export backup</button><button onClick={() => backupInput.current?.click()}><Upload size={13} /> Import backup</button><input ref={backupInput} type="file" accept="application/json,.json" hidden onChange={(event) => restoreBackup(event.target.files?.[0])} /></div></div>
+      <p className="backup-message" role="status">{backupMessage}</p><p className="local-note">Your progress is saved in this browser, on this device.</p>
+    </section>
 
     <footer className="site-footer"><div className="wrap footer-inner"><span className="brand"><span className="brand-mark">言</span>KOTOBA<span className="brand-dot">.</span></span><span>日本語を、少しずつ。 <i>—</i> Japanese, little by little.</span><span>MADE FOR THE LONG WAY <b>↗</b></span></div></footer>
   </main>;

@@ -2,15 +2,21 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight, RotateCcw, Shuffle, Volume2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
+import { ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight, RotateCcw, Shuffle, Volume2, X } from "lucide-react";
 import { toHiragana } from "wanakana";
 import { matchesKanjiAnswer, matchesMeaning, matchesReading, normalizeReading, romaji } from "@/lib/japanese";
 import { playUiSound } from "@/lib/ui-sound";
-import { loadProgress, recordAnswer, setDifficult, type ProgressStore } from "@/lib/storage/progress";
+import { loadProgress, recordAnswer, recordCompletedQuiz, recordCorrectQuizAnswer, setDifficult, type ProgressStore } from "@/lib/storage/progress";
+import { canonicalQuizHref, getQuizSession, removeQuizSession, saveQuizSession, type SavedQuizSession } from "@/lib/storage/quiz-sessions";
+import { recordStudyActivity } from "@/lib/storage/study-activity";
 import type { StudyItem } from "@/lib/study/types";
 
 type Mode = "learn" | "flashcards" | "quiz";
+
+function createQuizRunId() {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `quiz-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
 
 const locationAnswerDetails: Record<string, { meaning: "here" | "there"; formal: boolean; distance: "close" | "far"; optionalDistance?: boolean }> = {
   "ここ": { meaning: "here", formal: false, distance: "close", optionalDistance: true },
@@ -162,7 +168,12 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   const [checked, setChecked] = useState<boolean | null>(null);
   const [results, setResults] = useState<{ correct: number; incorrect: number; skipped: number; mistakes: StudyItem[]; difficult: StudyItem[] }>({ correct: 0, incorrect: 0, skipped: 0, mistakes: [], difficult: [] });
   const [finished, setFinished] = useState(false);
-  const [progress, setProgress] = useState<ProgressStore>({ cards: {}, updatedAt: "" });
+  const [quizSessionStatus, setQuizSessionStatus] = useState<"checking" | "prompt" | "ready">(mode === "quiz" ? "checking" : "ready");
+  const [pendingQuizSession, setPendingQuizSession] = useState<SavedQuizSession | null>(null);
+  const [showQuitPrompt, setShowQuitPrompt] = useState(false);
+  const [quizBaseItems, setQuizBaseItems] = useState<StudyItem[] | null>(null);
+  const [progress, setProgress] = useState<ProgressStore>({ cards: {}, quizStats: { completedRuns: 0, correctAnswers: 0, completedRunIds: [] }, updatedAt: "" });
+  const [quizRunId, setQuizRunId] = useState<string | null>(null);
   const [showRomaji, setShowRomaji] = useState(false);
   const [smartShuffle, setSmartShuffle] = useState(mode === "quiz");
   const smartOriginalRemaining = useRef<StudyItem[] | null>(null);
@@ -179,6 +190,10 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   const focusMode = mode !== "learn";
   const subjectPath = `/chapter/${chapterId}/${subject}`;
   const quizSourceItems = useMemo(() => mode === "quiz" && subject === "vocabulary" ? expandVocabularyAlternatives(initialItems) : initialItems, [initialItems, mode, subject]);
+
+  useEffect(() => {
+    recordStudyActivity({ chapterId, chapterTitle, subject, mode });
+  }, [chapterId, chapterTitle, subject, mode]);
 
   const toggleSmartShuffle = () => {
     if (checked !== null) return;
@@ -213,15 +228,64 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
       else if (review === "mistakes") selectedItems = initialItems.filter((item) => { const card = saved.cards[item.key]; return card && (card.incorrect > card.correct || card.difficult); });
       else if (category) selectedItems = initialItems.filter((item) => item.category === category);
       if (mode === "quiz" && subject === "vocabulary") selectedItems = expandVocabularyAlternatives(selectedItems);
-      setItems(mode === "quiz" ? smartShuffleItems(selectedItems, saved) : selectedItems);
+      if (mode === "quiz") {
+        const href = canonicalQuizHref(`${window.location.pathname}${window.location.search}`);
+        const savedSession = getQuizSession(href);
+        setQuizBaseItems(selectedItems);
+        if (savedSession && savedSession.itemKeys.length > 0 && savedSession.itemKeys.every((key) => selectedItems.some((item) => item.key === key))) {
+          setItems(selectedItems);
+          setPendingQuizSession(savedSession);
+          setQuizSessionStatus("prompt");
+        } else {
+          if (savedSession) removeQuizSession(href);
+          setItems(smartShuffleItems(selectedItems, saved));
+          setQuizRunId(createQuizRunId());
+          setQuizSessionStatus("ready");
+        }
+      } else {
+        setItems(selectedItems);
+      }
     }, 0);
     return () => window.clearTimeout(timer);
   }, [initialItems, mode, subject]);
   useEffect(() => {
-    if (mode !== "quiz" || checked !== null || finished) return;
+    if (mode !== "quiz" || quizSessionStatus !== "ready" || checked !== null || finished) return;
     const frame = window.requestAnimationFrame(() => inputRef.current?.focus({ preventScroll: true }));
     return () => window.cancelAnimationFrame(frame);
-  }, [index, current?.key, mode, checked, finished]);
+  }, [index, current?.key, mode, checked, finished, quizSessionStatus]);
+
+  useEffect(() => {
+    if (mode !== "quiz" || quizSessionStatus !== "ready" || !quizBaseItems) return;
+    const href = canonicalQuizHref(`${window.location.pathname}${window.location.search}`);
+    if (finished) {
+      removeQuizSession(href);
+      return;
+    }
+    if (items.length === 0) return;
+    saveQuizSession({
+      id: href,
+      runId: quizRunId ?? undefined,
+      href,
+      chapterId,
+      chapterTitle,
+      subject,
+      itemKeys: items.map((item) => item.key),
+      index,
+      answer,
+      meaningAnswer,
+      formalAnswer,
+      beforeNounAnswer,
+      distanceAnswer,
+      checked,
+      results: { correct: results.correct, incorrect: results.incorrect, skipped: results.skipped, mistakeKeys: results.mistakes.map((item) => item.key), difficultKeys: results.difficult.map((item) => item.key) },
+      smartShuffle,
+      updatedAt: new Date().toISOString(),
+    });
+  }, [mode, quizSessionStatus, quizBaseItems, finished, items, index, answer, meaningAnswer, formalAnswer, beforeNounAnswer, distanceAnswer, checked, results, smartShuffle, chapterId, chapterTitle, subject, quizRunId]);
+  useEffect(() => {
+    if (mode !== "quiz" || !finished || !quizRunId) return;
+    recordCompletedQuiz(quizRunId);
+  }, [mode, finished, quizRunId]);
   const next = useCallback(() => {
     if (index >= items.length - 1) setFinished(true);
     else { setIndex((value) => value + 1); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setChecked(null); setRevealed(false); }
@@ -246,6 +310,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   const emptyResults = () => ({ correct: 0, incorrect: 0, skipped: 0, mistakes: [] as StudyItem[], difficult: [] as StudyItem[] });
   const shuffle = () => { setItems((value) => [...value].sort(() => Math.random() - 0.5)); setIndex(0); setFinished(false); setResults(emptyResults()); setRevealed(false); setChecked(null); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); };
   const restart = () => {
+    if (mode === "quiz") setQuizRunId(createQuizRunId());
     smartOriginalRemaining.current = smartShuffle ? quizSourceItems : null;
     setItems(smartShuffle ? smartShuffleItems(quizSourceItems, progress) : quizSourceItems);
     setIndex(0); setFinished(false); setResults(emptyResults()); setChecked(null); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setRevealed(false);
@@ -269,7 +334,8 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
       : matchesKanjiAnswer(answer, meaningAnswer, current);
     playUiSound(correct ? "correct" : "incorrect");
     setChecked(correct);
-    const updated = recordAnswer(current.key, correct);
+    let updated = recordAnswer(current.key, correct);
+    if (correct) updated = recordCorrectQuizAnswer();
     setProgress(updated);
     setResults((value) => ({ ...value, [correct ? "correct" : "incorrect"]: value[correct ? "correct" : "incorrect"] + 1, mistakes: correct ? value.mistakes : [...value.mistakes, current] }));
   };
@@ -295,13 +361,75 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
     setResults((value) => ({ ...value, difficult: [...value.difficult, current] }));
   };
   const skip = () => { setResults((value) => ({ ...value, skipped: value.skipped + 1 })); next(); };
+  const continueSavedQuiz = () => {
+    if (!pendingQuizSession || !quizBaseItems) return;
+    const byKey = new Map(quizBaseItems.map((item) => [item.key, item]));
+    const restoredItems = pendingQuizSession.itemKeys.map((key) => byKey.get(key)).filter((item): item is StudyItem => Boolean(item));
+    if (restoredItems.length !== pendingQuizSession.itemKeys.length || restoredItems.length === 0) {
+      restartSavedQuiz();
+      return;
+    }
+    const restoredIndex = Math.min(Math.max(0, pendingQuizSession.index), restoredItems.length - 1);
+    setItems(restoredItems);
+    setIndex(restoredIndex);
+    setAnswer(pendingQuizSession.answer ?? "");
+    setMeaningAnswer(pendingQuizSession.meaningAnswer ?? "");
+    setFormalAnswer(Boolean(pendingQuizSession.formalAnswer));
+    setBeforeNounAnswer(Boolean(pendingQuizSession.beforeNounAnswer));
+    setDistanceAnswer(pendingQuizSession.distanceAnswer ?? "");
+    setChecked(pendingQuizSession.checked ?? null);
+    setResults({
+      correct: pendingQuizSession.results?.correct ?? 0,
+      incorrect: pendingQuizSession.results?.incorrect ?? 0,
+      skipped: pendingQuizSession.results?.skipped ?? 0,
+      mistakes: (pendingQuizSession.results?.mistakeKeys ?? []).map((key) => byKey.get(key)).filter((item): item is StudyItem => Boolean(item)),
+      difficult: (pendingQuizSession.results?.difficultKeys ?? []).map((key) => byKey.get(key)).filter((item): item is StudyItem => Boolean(item)),
+    });
+    setSmartShuffle(pendingQuizSession.smartShuffle);
+    setQuizRunId(pendingQuizSession.runId ?? createQuizRunId());
+    smartOriginalRemaining.current = null;
+    setFinished(false);
+    setPendingQuizSession(null);
+    setQuizSessionStatus("ready");
+  };
+  const restartSavedQuiz = () => {
+    if (!quizBaseItems) return;
+    const href = pendingQuizSession?.href ?? canonicalQuizHref(`${window.location.pathname}${window.location.search}`);
+    removeQuizSession(href);
+    setItems(smartShuffleItems(quizBaseItems, progress));
+    setQuizRunId(createQuizRunId());
+    setIndex(0);
+    setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer("");
+    setChecked(null); setResults(emptyResults()); setFinished(false); setSmartShuffle(true);
+    smartOriginalRemaining.current = null;
+    setPendingQuizSession(null);
+    setQuizSessionStatus("ready");
+  };
+  const confirmQuizExit = (event: ReactMouseEvent<HTMLAnchorElement>) => {
+    if (mode !== "quiz") return;
+    event.preventDefault();
+    setShowQuitPrompt(true);
+  };
+  const quitQuiz = () => {
+    removeQuizSession(canonicalQuizHref(`${window.location.pathname}${window.location.search}`));
+    router.push(`/chapter/${chapterId}`);
+  };
   const speak = () => { if (typeof window !== "undefined" && "speechSynthesis" in window) { const utterance = new SpeechSynthesisUtterance(current.japanese); utterance.lang = "ja-JP"; window.speechSynthesis.speak(utterance); } };
   const dueItems = useMemo(() => initialItems.filter((item) => { const due = progress.cards[item.key]?.nextReview; return due && new Date(due) <= new Date(); }), [initialItems, progress]);
+  if (mode === "quiz" && quizSessionStatus === "checking") return <main className={`study-shell ${focusMode ? "focus-mode" : ""}`} aria-busy="true"><div className="quiz-session-loading">Preparing your quiz…</div></main>;
+  if (mode === "quiz" && showQuitPrompt) return <main className={`study-shell ${focusMode ? "focus-mode" : ""}`}>
+    <div className="study-topline"><Link href={subjectPath} className="study-exit"><ArrowLeft size={15} /><span>{chapterTitle} <i>/</i> {subject}</span></Link><span className="study-mode-label">QUIZ IN PROGRESS<b> · </b> {chapterId}</span><span className="study-mode-right">{focusMode && <span>FOCUS MODE</span>}<Link href={`/chapter/${chapterId}`} onClick={confirmQuizExit}>EXIT <span>×</span></Link></span></div>
+    <section className="quiz-resume-prompt" aria-labelledby="quiz-quit-title"><p className="eyebrow"><span className="eyebrow-line" />QUIZ IN PROGRESS</p><h1 id="quiz-quit-title">Do you really want to quit?</h1><p>Your saved position, answers, and results for this quiz will be erased.</p><div><button type="button" className="button button-dark" onClick={() => setShowQuitPrompt(false)}>Keep quiz <ArrowRight size={15} /></button><button type="button" className="quiz-start-over" onClick={quitQuiz}>Quit quiz <X size={14} /></button></div></section>
+  </main>;
+  if (mode === "quiz" && quizSessionStatus === "prompt" && pendingQuizSession) return <main className={`study-shell ${focusMode ? "focus-mode" : ""}`}>
+    <div className="study-topline"><Link href={subjectPath} className="study-exit"><ArrowLeft size={15} /><span>{chapterTitle} <i>/</i> {subject}</span></Link><span className="study-mode-label">QUIZ IN PROGRESS<b> · </b> {chapterId}</span><span className="study-mode-right">{focusMode && <span>FOCUS MODE</span>}<Link href={`/chapter/${chapterId}`} onClick={confirmQuizExit}>EXIT <span>×</span></Link></span></div>
+    <section className="quiz-resume-prompt" aria-labelledby="quiz-resume-title"><p className="eyebrow"><span className="eyebrow-line" />SAVED IN THIS BROWSER</p><h1 id="quiz-resume-title">Continue your quiz?</h1><p>You were on question {Math.min(pendingQuizSession.index + 1, pendingQuizSession.itemKeys.length)} of {pendingQuizSession.itemKeys.length}. Your answers and quiz order are saved.</p><div><button type="button" className="button button-dark" onClick={continueSavedQuiz}>Continue quiz <ArrowRight size={15} /></button><button type="button" className="quiz-start-over" onClick={restartSavedQuiz}>Start over <RotateCcw size={14} /></button></div></section>
+  </main>;
   if (mode !== "learn" && items.length === 0) return <main className="study-shell"><div className="study-empty"><span>頁</span><h1>No cards in this chapter yet.</h1><p>When you add vocabulary or kanji examples, you’ll find them here.</p><Link className="button button-dark" href={subjectPath}>Back to {subject}</Link></div></main>;
 
   return <main className={`study-shell ${focusMode ? "focus-mode" : "learn-mode"}`}>
-    <div className="study-topline"><Link href={subjectPath} className="study-exit"><ArrowLeft size={15} /><span>{chapterTitle} <i>/</i> {subject}</span></Link><span className="study-mode-label">{mode === "quiz" ? vocabularyQuiz ? "MEANING PRACTICE" : "READING PRACTICE" : mode === "flashcards" ? "FLASHCARDS" : "STUDY LIBRARY"}<b> · </b> {chapterId}</span><span className="study-mode-right">{focusMode && <span>FOCUS MODE</span>}<Link href={`/chapter/${chapterId}`}>EXIT <span>×</span></Link></span></div>
-    {mode === "learn" ? <LearnView items={items} subject={subject} progress={progress} showRomaji={showRomaji} setShowRomaji={setShowRomaji} chapterId={chapterId} dueCount={dueItems.length} onShuffle={shuffle} /> : finished ? <Results results={results} itemsLength={items.length} restart={restart} mistakesOnly={() => { smartOriginalRemaining.current = smartShuffle ? results.mistakes : null; setItems(smartShuffle ? smartShuffleItems(results.mistakes, progress) : results.mistakes); setIndex(0); setFinished(false); setResults(emptyResults()); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setChecked(null); setRevealed(false); }} /> : <>
+    <div className="study-topline"><Link href={subjectPath} className="study-exit"><ArrowLeft size={15} /><span>{chapterTitle} <i>/</i> {subject}</span></Link><span className="study-mode-label">{mode === "quiz" ? vocabularyQuiz ? "MEANING PRACTICE" : "READING PRACTICE" : mode === "flashcards" ? "FLASHCARDS" : "STUDY LIBRARY"}<b> · </b> {chapterId}</span><span className="study-mode-right">{focusMode && <span>FOCUS MODE</span>}<Link href={`/chapter/${chapterId}`} onClick={confirmQuizExit}>EXIT <span>×</span></Link></span></div>
+    {mode === "learn" ? <LearnView items={items} subject={subject} progress={progress} showRomaji={showRomaji} setShowRomaji={setShowRomaji} chapterId={chapterId} dueCount={dueItems.length} onShuffle={shuffle} /> : finished ? <Results results={results} itemsLength={items.length} restart={restart} mistakesOnly={() => { setQuizRunId(createQuizRunId()); smartOriginalRemaining.current = smartShuffle ? results.mistakes : null; setItems(smartShuffle ? smartShuffleItems(results.mistakes, progress) : results.mistakes); setIndex(0); setFinished(false); setResults(emptyResults()); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setChecked(null); setRevealed(false); }} /> : <>
       <div className={`session-progress ${mode === "quiz" ? "with-smart-shuffle" : ""}`}><span>{String(index + 1).padStart(2, "0")} <i>/</i> {String(items.length).padStart(2, "0")}</span><div><i style={{ width: `${((index + 1) / items.length) * 100}%` }} /></div>{mode === "quiz" && <button type="button" className={`smart-shuffle-toggle ${smartShuffle ? "is-active" : ""}`} aria-pressed={smartShuffle} title="Prioritize missed and difficult cards; shuffle ties." disabled={checked !== null} onClick={toggleSmartShuffle}><Shuffle size={12} /> SMART {smartShuffle ? "ON" : "OFF"}</button>}<button onClick={skip}>Skip <ArrowRight size={13} /></button></div>
       <div className="study-card-stage" key={current?.key}>
         <div className="study-context">{current?.kanji && <span className="kanji-chip">KANJI {current.kanji}</span>}<span>{current?.category ?? (current?.kanji ? `${current.strokeCount} STROKES` : "CHAPTER WORD")}</span><button className="audio-button" onClick={speak} aria-label="Play Japanese pronunciation"><Volume2 size={16} /></button></div>
