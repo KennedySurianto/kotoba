@@ -217,7 +217,11 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
     }, 0);
     return () => window.clearTimeout(timer);
   }, [initialItems, mode, subject]);
-  useEffect(() => { if (mode === "quiz" && checked === null && !finished) inputRef.current?.focus(); }, [index, mode, checked, finished]);
+  useEffect(() => {
+    if (mode !== "quiz" || checked !== null || finished) return;
+    const frame = window.requestAnimationFrame(() => inputRef.current?.focus({ preventScroll: true }));
+    return () => window.cancelAnimationFrame(frame);
+  }, [index, current?.key, mode, checked, finished]);
   const next = useCallback(() => {
     if (index >= items.length - 1) setFinished(true);
     else { setIndex((value) => value + 1); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setChecked(null); setRevealed(false); }
