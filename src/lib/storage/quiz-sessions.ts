@@ -2,6 +2,8 @@ export type SavedQuizSession = {
   runId?: string;
   countsAsSession?: boolean;
   vocabularyDirection?: "japanese-to-english" | "english-to-japanese";
+  japaneseInputMode?: "hiragana" | "katakana" | "kanji";
+  answerReadingOverride?: string | null;
   id: string;
   href: string;
   chapterId: string;

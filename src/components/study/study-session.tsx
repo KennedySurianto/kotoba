@@ -2,18 +2,24 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import { ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight, RotateCcw, Shuffle, Volume2, X } from "lucide-react";
-import { toHiragana } from "wanakana";
+import { toHiragana, toKatakana } from "wanakana";
 import { matchesKanjiAnswer, matchesMeaning, matchesReading, normalizeReading, romaji } from "@/lib/japanese";
 import { playUiSound } from "@/lib/ui-sound";
 import { loadProgress, recordAnswer, recordCompletedQuiz, recordCorrectQuizAnswer, setDifficult, type ProgressStore } from "@/lib/storage/progress";
 import { canonicalQuizHref, getQuizSession, removeQuizSession, saveQuizSession, type SavedQuizSession } from "@/lib/storage/quiz-sessions";
 import { recordStudyActivity } from "@/lib/storage/study-activity";
-import type { StudyItem } from "@/lib/study/types";
+import type { JapaneseInputCandidate, StudyItem } from "@/lib/study/types";
 
 type Mode = "learn" | "flashcards" | "quiz";
 type VocabularyQuizDirection = "japanese-to-english" | "english-to-japanese";
+type JapaneseInputMode = "hiragana" | "katakana" | "kanji";
+
+function convertJapaneseInput(value: string, mode: JapaneseInputMode) {
+  const hiragana = toHiragana(value, { IMEMode: "toHiragana" });
+  return mode === "katakana" ? toKatakana(hiragana) : hiragana;
+}
 
 function createQuizRunId() {
   return typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `quiz-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -170,7 +176,7 @@ function smartShuffleItems(items: StudyItem[], progress: ProgressStore) {
     .map(({ item }) => item);
 }
 
-export function StudySession({ chapterId, chapterTitle, subject, mode, initialItems }: { chapterId: string; chapterTitle: string; subject: "vocabulary" | "kanji"; mode: Mode; initialItems: StudyItem[] }) {
+export function StudySession({ chapterId, chapterTitle, subject, mode, initialItems, japaneseCandidates }: { chapterId: string; chapterTitle: string; subject: "vocabulary" | "kanji"; mode: Mode; initialItems: StudyItem[]; japaneseCandidates: JapaneseInputCandidate[] }) {
   const [items, setItems] = useState(initialItems);
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
@@ -191,6 +197,10 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   const [quizRunId, setQuizRunId] = useState<string | null>(null);
   const [quizCountsAsSession, setQuizCountsAsSession] = useState(true);
   const [vocabularyDirection, setVocabularyDirection] = useState<VocabularyQuizDirection>("japanese-to-english");
+  const [japaneseInputMode, setJapaneseInputMode] = useState<JapaneseInputMode>("hiragana");
+  const [answerReadingOverride, setAnswerReadingOverride] = useState<string | null>(null);
+  const [kanjiPickerOpen, setKanjiPickerOpen] = useState(false);
+  const [activeKanjiCandidate, setActiveKanjiCandidate] = useState(0);
   const [showRomaji, setShowRomaji] = useState(false);
   const [smartShuffle, setSmartShuffle] = useState(mode === "quiz");
   const smartOriginalRemaining = useRef<StudyItem[] | null>(null);
@@ -200,6 +210,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   const current = items[index];
   const vocabularyQuiz = mode === "quiz" && subject === "vocabulary";
   const englishToJapaneseQuiz = vocabularyQuiz && vocabularyDirection === "english-to-japanese";
+  const japaneseAnswerField = mode === "quiz" && (!vocabularyQuiz || englishToJapaneseQuiz);
   const kanjiInVocabulary = vocabularyQuiz && Boolean(current?.japanese.match(/\p{Script=Han}/u));
   const locationAnswer = vocabularyQuiz ? locationAnswerDetails[current?.japanese ?? ""] : undefined;
   const demonstrativeAnswer = vocabularyQuiz ? demonstrativeAnswerDetails[current?.japanese ?? ""] : undefined;
@@ -208,6 +219,15 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   const focusMode = mode !== "learn";
   const subjectPath = `/chapter/${chapterId}/${subject}`;
   const quizSourceItems = useMemo(() => mode === "quiz" && subject === "vocabulary" ? expandVocabularyAlternatives(initialItems) : initialItems, [initialItems, mode, subject]);
+  const kanjiSuggestions = useMemo(() => {
+    const query = normalizeReading(answerReadingOverride ?? answer);
+    if (!kanjiPickerOpen || !query) return [];
+    const matches = japaneseCandidates.flatMap((candidate) => candidate.readings
+      .filter((reading) => normalizeReading(reading).startsWith(query))
+      .map((reading) => ({ japanese: candidate.japanese, reading: normalizeReading(reading) })));
+    const unique = new Map(matches.map((candidate) => [`${candidate.japanese}:${candidate.reading}`, candidate]));
+    return Array.from(unique.values()).sort((a, b) => Number(a.reading !== query) - Number(b.reading !== query) || a.japanese.localeCompare(b.japanese, "ja")).slice(0, 8);
+  }, [answer, answerReadingOverride, kanjiPickerOpen, japaneseCandidates]);
 
   useEffect(() => {
     recordStudyActivity({ chapterId, chapterTitle, subject, mode });
@@ -228,7 +248,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
       smartOriginalRemaining.current = null;
       setSmartShuffle(false);
     }
-    setAnswer("");
+    setAnswer(""); setAnswerReadingOverride(null); setKanjiPickerOpen(false); setActiveKanjiCandidate(0);
     setMeaningAnswer("");
     setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer("");
     setChecked(null);
@@ -290,6 +310,8 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
       runId: quizRunId ?? undefined,
       countsAsSession: quizCountsAsSession,
       vocabularyDirection,
+      japaneseInputMode,
+      answerReadingOverride,
       href,
       chapterId,
       chapterTitle,
@@ -306,14 +328,14 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
       smartShuffle,
       updatedAt: new Date().toISOString(),
     });
-  }, [mode, quizSessionStatus, quizBaseItems, finished, items, index, answer, meaningAnswer, formalAnswer, beforeNounAnswer, distanceAnswer, checked, results, smartShuffle, chapterId, chapterTitle, subject, quizRunId, quizCountsAsSession, vocabularyDirection]);
+  }, [mode, quizSessionStatus, quizBaseItems, finished, items, index, answer, meaningAnswer, formalAnswer, beforeNounAnswer, distanceAnswer, checked, results, smartShuffle, chapterId, chapterTitle, subject, quizRunId, quizCountsAsSession, vocabularyDirection, japaneseInputMode, answerReadingOverride]);
   useEffect(() => {
     if (mode !== "quiz" || !finished || !quizRunId || !quizCountsAsSession || results.correct + results.incorrect === 0) return;
     recordCompletedQuiz(quizRunId);
   }, [mode, finished, quizRunId, quizCountsAsSession, results.correct, results.incorrect]);
   const next = useCallback(() => {
     if (index >= items.length - 1) setFinished(true);
-    else { setIndex((value) => value + 1); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setChecked(null); setRevealed(false); }
+    else { setIndex((value) => value + 1); setAnswer(""); setAnswerReadingOverride(null); setKanjiPickerOpen(false); setActiveKanjiCandidate(0); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setChecked(null); setRevealed(false); }
   }, [index, items.length]);
 
   useEffect(() => {
@@ -333,12 +355,12 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   }, [mode, next, subjectPath, checked, router]);
 
   const emptyResults = () => ({ correct: 0, incorrect: 0, skipped: 0, mistakes: [] as StudyItem[], difficult: [] as StudyItem[] });
-  const shuffle = () => { setItems((value) => [...value].sort(() => Math.random() - 0.5)); setIndex(0); setFinished(false); setResults(emptyResults()); setRevealed(false); setChecked(null); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); };
+  const shuffle = () => { setItems((value) => [...value].sort(() => Math.random() - 0.5)); setIndex(0); setFinished(false); setResults(emptyResults()); setRevealed(false); setChecked(null); setAnswer(""); setAnswerReadingOverride(null); setKanjiPickerOpen(false); setActiveKanjiCandidate(0); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); };
   const restart = () => {
     if (mode === "quiz") { setQuizRunId(createQuizRunId()); setQuizCountsAsSession(true); }
     smartOriginalRemaining.current = smartShuffle ? quizSourceItems : null;
     setItems(smartShuffle ? smartShuffleItems(quizSourceItems, progress) : quizSourceItems);
-    setIndex(0); setFinished(false); setResults(emptyResults()); setChecked(null); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setRevealed(false);
+    setIndex(0); setFinished(false); setResults(emptyResults()); setChecked(null); setAnswer(""); setAnswerReadingOverride(null); setKanjiPickerOpen(false); setActiveKanjiCandidate(0); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setRevealed(false);
   };
   const mark = (correct: boolean, difficult = false) => {
     const updated = recordAnswer(current.key, correct);
@@ -356,30 +378,74 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
       : false;
     const correct = vocabularyQuiz
       ? vocabularyDirection === "english-to-japanese"
-        ? matchesJapaneseVocabulary(answer, current)
+        ? matchesJapaneseVocabulary(answer, current) || Boolean(answerReadingOverride && matchesReading(answerReadingOverride, current.acceptedReadings))
         : specialMeaningAnswer ? specialAnswerCorrect : matchesMeaning(answer, current.meanings, current.acceptedMeanings)
-      : matchesKanjiAnswer(answer, meaningAnswer, current);
+      : matchesKanjiAnswer(answerReadingOverride ?? answer, meaningAnswer, current);
     playUiSound(correct ? "correct" : "incorrect");
     setChecked(correct);
+    setKanjiPickerOpen(false);
     let updated = recordAnswer(current.key, correct);
     if (correct) updated = recordCorrectQuizAnswer();
     setProgress(updated);
     setResults((value) => ({ ...value, [correct ? "correct" : "incorrect"]: value[correct ? "correct" : "incorrect"] + 1, mistakes: correct ? value.mistakes : [...value.mistakes, current] }));
   };
-  const updateReadingAnswer = (input: HTMLInputElement) => {
+  const updateReadingAnswer = (input: HTMLInputElement, inputMode: JapaneseInputMode = japaneseInputMode) => {
     const value = input.value;
     if (composingRef.current) {
       setAnswer(value);
+      setAnswerReadingOverride(null);
       return;
     }
     const selectionStart = input.selectionStart ?? value.length;
     const selectionEnd = input.selectionEnd ?? selectionStart;
-    const options = { IMEMode: "toHiragana" as const };
-    const converted = toHiragana(value, options);
-    const nextStart = toHiragana(value.slice(0, selectionStart), options).length;
-    const nextEnd = toHiragana(value.slice(0, selectionEnd), options).length;
+    const converted = convertJapaneseInput(value, inputMode);
+    const nextStart = convertJapaneseInput(value.slice(0, selectionStart), inputMode).length;
+    const nextEnd = convertJapaneseInput(value.slice(0, selectionEnd), inputMode).length;
     setAnswer(converted);
+    setAnswerReadingOverride(null);
+    setActiveKanjiCandidate(0);
     window.requestAnimationFrame(() => inputRef.current?.setSelectionRange(nextStart, nextEnd));
+  };
+  const selectJapaneseInputMode = (nextMode: JapaneseInputMode) => {
+    setJapaneseInputMode(nextMode);
+    if (nextMode === "kanji") {
+      setKanjiPickerOpen(true);
+      setActiveKanjiCandidate(0);
+      return;
+    }
+    setAnswer(convertJapaneseInput(answerReadingOverride ?? answer, nextMode));
+    setAnswerReadingOverride(null);
+    setKanjiPickerOpen(false);
+    setActiveKanjiCandidate(0);
+  };
+  const chooseKanjiCandidate = (candidate: { japanese: string; reading: string }) => {
+    setAnswer(candidate.japanese);
+    setAnswerReadingOverride(candidate.reading);
+    setKanjiPickerOpen(false);
+    setActiveKanjiCandidate(0);
+    inputRef.current?.focus({ preventScroll: true });
+  };
+  const handleJapaneseInputKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
+    if (event.nativeEvent.isComposing || composingRef.current) return;
+    if (event.altKey && (event.key === "1" || event.key === "2" || event.key === "3")) {
+      event.preventDefault();
+      event.stopPropagation();
+      selectJapaneseInputMode(event.key === "1" ? "hiragana" : event.key === "2" ? "katakana" : "kanji");
+      return;
+    }
+    if (!kanjiPickerOpen) return;
+    if (event.key === "Escape") {
+      event.preventDefault(); event.stopPropagation(); setKanjiPickerOpen(false); return;
+    }
+    if (kanjiSuggestions.length === 0) return;
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault(); event.stopPropagation();
+      const direction = event.key === "ArrowDown" ? 1 : -1;
+      setActiveKanjiCandidate((index) => (index + direction + kanjiSuggestions.length) % kanjiSuggestions.length);
+    } else if (event.key === "Enter") {
+      event.preventDefault(); event.stopPropagation();
+      chooseKanjiCandidate(kanjiSuggestions[activeKanjiCandidate] ?? kanjiSuggestions[0]);
+    }
   };
   const flagDifficult = () => {
     if (!current || results.difficult.some((item) => item.key === current.key)) return;
@@ -416,6 +482,9 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
     setQuizRunId(pendingQuizSession.runId ?? createQuizRunId());
     setQuizCountsAsSession(pendingQuizSession.countsAsSession ?? true);
     setVocabularyDirection(pendingQuizSession.vocabularyDirection ?? "japanese-to-english");
+    setJapaneseInputMode(pendingQuizSession.japaneseInputMode ?? "hiragana");
+    setAnswerReadingOverride(pendingQuizSession.answerReadingOverride ?? null);
+    setKanjiPickerOpen(false);
     smartOriginalRemaining.current = null;
     setFinished(false);
     setPendingQuizSession(null);
@@ -429,11 +498,13 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
     setQuizRunId(subject === "vocabulary" ? null : createQuizRunId());
     setQuizCountsAsSession(true);
     setIndex(0);
-    setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer("");
+    setAnswer(""); setAnswerReadingOverride(null); setKanjiPickerOpen(false); setActiveKanjiCandidate(0); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer("");
     setChecked(null); setResults(emptyResults()); setFinished(false); setSmartShuffle(true);
     smartOriginalRemaining.current = null;
     setPendingQuizSession(null);
     setVocabularyDirection("japanese-to-english");
+    setJapaneseInputMode("hiragana");
+    setAnswerReadingOverride(null); setKanjiPickerOpen(false);
     setQuizSessionStatus(subject === "vocabulary" ? "setup" : "ready");
   };
   const confirmQuizExit = (event: ReactMouseEvent<HTMLAnchorElement>) => {
@@ -447,6 +518,8 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   };
   const startVocabularyQuiz = (direction: VocabularyQuizDirection) => {
     setVocabularyDirection(direction);
+    setJapaneseInputMode("hiragana");
+    setAnswerReadingOverride(null); setKanjiPickerOpen(false);
     setQuizRunId(createQuizRunId());
     setQuizCountsAsSession(true);
     setQuizSessionStatus("ready");
@@ -474,7 +547,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
 
   return <main className={`study-shell ${focusMode ? "focus-mode" : "learn-mode"}`}>
     <div className="study-topline"><Link href={subjectPath} className="study-exit" onClick={mode === "quiz" ? confirmQuizExit : undefined}><ArrowLeft size={15} /><span>{chapterTitle} <i>/</i> {subject}</span></Link><span className="study-mode-label">{mode === "quiz" ? englishToJapaneseQuiz ? "JAPANESE WORD PRACTICE" : vocabularyQuiz ? "MEANING PRACTICE" : "READING PRACTICE" : mode === "flashcards" ? "FLASHCARDS" : "STUDY LIBRARY"}<b> · </b> {chapterId}</span><span className="study-mode-right">{focusMode && <span>FOCUS MODE</span>}<Link href={`/chapter/${chapterId}`} onClick={mode === "quiz" ? confirmQuizExit : undefined}>EXIT <span>×</span></Link></span></div>
-    {mode === "learn" ? <LearnView items={items} subject={subject} progress={progress} showRomaji={showRomaji} setShowRomaji={setShowRomaji} chapterId={chapterId} dueCount={dueItems.length} onShuffle={shuffle} /> : finished ? <Results results={results} itemsLength={items.length} restart={restart} mistakesOnly={() => { setQuizRunId(createQuizRunId()); setQuizCountsAsSession(false); smartOriginalRemaining.current = smartShuffle ? results.mistakes : null; setItems(smartShuffle ? smartShuffleItems(results.mistakes, progress) : results.mistakes); setIndex(0); setFinished(false); setResults(emptyResults()); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setChecked(null); setRevealed(false); }} /> : <>
+    {mode === "learn" ? <LearnView items={items} subject={subject} progress={progress} showRomaji={showRomaji} setShowRomaji={setShowRomaji} chapterId={chapterId} dueCount={dueItems.length} onShuffle={shuffle} /> : finished ? <Results results={results} itemsLength={items.length} restart={restart} mistakesOnly={() => { setQuizRunId(createQuizRunId()); setQuizCountsAsSession(false); smartOriginalRemaining.current = smartShuffle ? results.mistakes : null; setItems(smartShuffle ? smartShuffleItems(results.mistakes, progress) : results.mistakes); setIndex(0); setFinished(false); setResults(emptyResults()); setAnswer(""); setAnswerReadingOverride(null); setKanjiPickerOpen(false); setActiveKanjiCandidate(0); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setChecked(null); setRevealed(false); }} /> : <>
       <div className={`session-progress ${mode === "quiz" ? "with-smart-shuffle" : ""}`}><span>{String(index + 1).padStart(2, "0")} <i>/</i> {String(items.length).padStart(2, "0")}</span><div><i style={{ width: `${((index + 1) / items.length) * 100}%` }} /></div>{mode === "quiz" && <button type="button" className={`smart-shuffle-toggle ${smartShuffle ? "is-active" : ""}`} aria-pressed={smartShuffle} title="Prioritize missed and difficult cards; shuffle ties." disabled={checked !== null} onClick={toggleSmartShuffle}><Shuffle size={12} /> SMART {smartShuffle ? "ON" : "OFF"}</button>}<button onClick={skip}>Skip <ArrowRight size={13} /></button></div>
       <div className="study-card-stage" key={current?.key}>
         <div className="study-context">{current?.kanji && <span className="kanji-chip">KANJI {current.kanji}</span>}<span>{current?.category ?? (current?.kanji ? `${current.strokeCount} STROKES` : "CHAPTER WORD")}</span><button className="audio-button" onClick={speak} aria-label="Play Japanese pronunciation"><Volume2 size={16} /></button></div>
@@ -484,17 +557,19 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
         </div> : <div className="quiz-answer-area">
           <form className="answer-form" onSubmit={(event) => { event.preventDefault(); if (!(event.nativeEvent as Event & { isComposing?: boolean }).isComposing && !composingRef.current) submit(); }}>
             <label htmlFor="reading-answer">YOUR ANSWER <span>{vocabularyQuiz ? englishToJapaneseQuiz ? "JAPANESE" : "ENGLISH" : "HIRAGANA / ROMAJI + ENGLISH"}</span></label>
-            <div className={`answer-input-wrap ${checked === null ? "" : vocabularyQuiz ? checked ? "input-correct" : "input-wrong" : current?.acceptedAnswerPairs ? checked ? "input-correct" : "input-wrong" : matchesReading(answer, current?.acceptedReadings ?? []) ? "input-correct" : "input-wrong"}`}>
-              <input ref={inputRef} id="reading-answer" aria-label={vocabularyQuiz ? englishToJapaneseQuiz ? "Japanese word; Hiragana, Katakana, Kanji, or Romaji accepted" : "English meaning" : "Hiragana reading; Romaji accepted"} autoComplete="off" autoCapitalize="off" spellCheck={vocabularyQuiz && !englishToJapaneseQuiz} lang={vocabularyQuiz && !englishToJapaneseQuiz ? "en" : "ja"} inputMode="text" placeholder={vocabularyQuiz ? englishToJapaneseQuiz ? "Type the Japanese word…" : "Type the meaning…" : "Type Hiragana or Romaji…"} value={answer} onChange={(event) => vocabularyQuiz ? setAnswer(event.target.value) : updateReadingAnswer(event.currentTarget)} onCompositionStart={() => { composingRef.current = true; }} onCompositionEnd={() => { composingRef.current = false; }} disabled={checked !== null} />
+            <div className={`answer-input-wrap ${japaneseAnswerField ? "japanese-answer-wrap" : ""} ${checked === null ? "" : vocabularyQuiz ? checked ? "input-correct" : "input-wrong" : current?.acceptedAnswerPairs ? checked ? "input-correct" : "input-wrong" : matchesReading(answerReadingOverride ?? answer, current?.acceptedReadings ?? []) ? checked ? "input-correct" : "input-wrong" : "input-wrong"}`}>
+              <input ref={inputRef} id="reading-answer" aria-label={vocabularyQuiz ? englishToJapaneseQuiz ? "Japanese word; Hiragana, Katakana, Kanji, or Romaji accepted" : "English meaning" : "Japanese reading; Hiragana, Katakana, Romaji, or kanji suggestions accepted"} aria-expanded={japaneseAnswerField && kanjiPickerOpen} aria-controls={japaneseAnswerField && kanjiPickerOpen ? "kanji-suggestions" : undefined} autoComplete="off" autoCapitalize="off" spellCheck={vocabularyQuiz && !englishToJapaneseQuiz} lang={vocabularyQuiz && !englishToJapaneseQuiz ? "en" : "ja"} inputMode="text" placeholder={vocabularyQuiz ? englishToJapaneseQuiz ? "Type the Japanese word…" : "Type the meaning…" : japaneseInputMode === "kanji" ? "Type a reading for kanji suggestions…" : `Type ${japaneseInputMode === "hiragana" ? "romaji or hiragana" : "romaji or katakana"}…`} value={answer} onChange={(event) => japaneseAnswerField ? updateReadingAnswer(event.currentTarget) : setAnswer(event.target.value)} onKeyDown={japaneseAnswerField ? handleJapaneseInputKeyDown : undefined} onCompositionStart={() => { composingRef.current = true; }} onCompositionEnd={(event) => { composingRef.current = false; if (japaneseAnswerField) updateReadingAnswer(event.currentTarget); }} disabled={checked !== null} />
               <span>↵</span>
+              {japaneseAnswerField && kanjiPickerOpen && <div id="kanji-suggestions" className="kanji-suggestion-list" role="listbox" aria-label="Kanji suggestions">{kanjiSuggestions.length ? kanjiSuggestions.map((candidate, candidateIndex) => <button type="button" role="option" aria-selected={candidateIndex === activeKanjiCandidate} className={candidateIndex === activeKanjiCandidate ? "is-active" : ""} key={`${candidate.japanese}-${candidate.reading}`} onMouseDown={(event) => event.preventDefault()} onClick={() => chooseKanjiCandidate(candidate)}><strong>{candidate.japanese}</strong><span>{candidate.reading}</span></button>) : <span className="kanji-suggestions-empty">{answer ? "No matching kanji in your study library." : "Type a reading, then choose a suggestion."}</span>}</div>}
             </div>
+            {japaneseAnswerField && <div className="japanese-input-modes" aria-label="Japanese input mode"><button type="button" disabled={checked !== null} aria-pressed={japaneseInputMode === "hiragana"} onClick={() => selectJapaneseInputMode("hiragana")}>HIRAGANA <kbd>ALT+1</kbd></button><button type="button" disabled={checked !== null} aria-pressed={japaneseInputMode === "katakana"} onClick={() => selectJapaneseInputMode("katakana")}>KATAKANA <kbd>ALT+2</kbd></button><button type="button" disabled={checked !== null} aria-pressed={japaneseInputMode === "kanji"} onClick={() => selectJapaneseInputMode("kanji")}>KANJI <kbd>ALT+3</kbd></button></div>}
             {!vocabularyQuiz && <div className={`answer-input-wrap meaning-answer-wrap ${checked === null ? "" : current?.acceptedAnswerPairs ? checked ? "input-correct" : "input-wrong" : matchesMeaning(meaningAnswer, current?.meanings ?? [], current?.acceptedMeanings) ? "input-correct" : "input-wrong"}`}>
               <input id="meaning-answer" aria-label="English meaning (Kotoba IME: Alphanumeric)" autoComplete="off" autoCapitalize="off" spellCheck lang="en" inputMode="text" placeholder="Type the English meaning…" value={meaningAnswer} onChange={(event) => setMeaningAnswer(event.target.value)} disabled={checked !== null} />
             </div>}
             {(locationAnswer || demonstrativeAnswer) && !englishToJapaneseQuiz && <SpecialMeaningControls location={locationAnswer} demonstrative={demonstrativeAnswer} formal={formalAnswer} setFormal={setFormalAnswer} beforeNoun={beforeNounAnswer} setBeforeNoun={setBeforeNounAnswer} distance={distanceAnswer} setDistance={setDistanceAnswer} disabled={checked !== null} />}
             {checked === null ? <button type="submit" className="button button-dark check-button" disabled={!answer.trim() || (!vocabularyQuiz && !meaningAnswer.trim()) || Boolean(!englishToJapaneseQuiz && (locationAnswer || demonstrativeAnswer) && !distanceAnswer && !(locationAnswer?.optionalDistance || demonstrativeAnswer?.optionalDistance))}>Check answer <ArrowRight size={15} /></button> : <div className={`quiz-feedback ${checked ? "feedback-correct" : "feedback-wrong"}`}><div><strong>{checked ? "Correct." : "Not quite."}</strong><span>{vocabularyQuiz ? englishToJapaneseQuiz ? <>{current?.japanese} <i>·</i> {current?.reading}</> : current?.meanings.join(" · ") : current?.acceptedAnswerPairs ? current.acceptedAnswerPairs.map((pair) => `${pair.acceptedReadings.join(" / ")} (${pair.acceptedReadings.map(romaji).join(" / ")}) — ${pair.meanings.join(" / ")}`).join(" · ") : <>{current?.reading} <i>·</i> {romaji(current?.reading ?? "")} <i>·</i> {current?.meanings.join(" · ")}</>}</span></div><button type="button" className="flag-difficult" onClick={flagDifficult}>{results.difficult.some((item) => item.key === current?.key) ? "Marked difficult" : "Mark difficult"}</button><button type="button" onClick={next}>Continue <ArrowRight size={15} /></button></div>}
           </form>
-          <p className="answer-hint">{vocabularyQuiz ? englishToJapaneseQuiz ? "Enter the Japanese word. Hiragana, Katakana, Kanji, or Romaji readings are accepted." : "Enter the English meaning. Hiragana readings appear above kanji." : "Enter the reading in Hiragana or Romaji, plus one of the English meanings. Katakana is accepted too."}</p>
+          <p className="answer-hint">{vocabularyQuiz ? englishToJapaneseQuiz ? "Romaji converts as you type. Alt+1 Hiragana · Alt+2 Katakana · Alt+3 Kanji suggestions." : "Enter the English meaning. Hiragana readings appear above kanji." : "Enter the reading and English meaning. Romaji converts as you type; Alt+1 Hiragana · Alt+2 Katakana · Alt+3 Kanji suggestions."}</p>
         </div>}
         {current?.notes && <p className="study-note">NOTE <span>{current.notes}</span></p>}
       </div>
