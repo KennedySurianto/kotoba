@@ -1,6 +1,7 @@
 export type SavedQuizSession = {
   runId?: string;
   countsAsSession?: boolean;
+  vocabularyDirection?: "japanese-to-english" | "english-to-japanese";
   id: string;
   href: string;
   chapterId: string;

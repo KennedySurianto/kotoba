@@ -13,9 +13,24 @@ import { recordStudyActivity } from "@/lib/storage/study-activity";
 import type { StudyItem } from "@/lib/study/types";
 
 type Mode = "learn" | "flashcards" | "quiz";
+type VocabularyQuizDirection = "japanese-to-english" | "english-to-japanese";
 
 function createQuizRunId() {
   return typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `quiz-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function matchesJapaneseVocabulary(value: string, item: StudyItem) {
+  const normalizedAnswer = normalizeReading(value);
+  return normalizedAnswer.length > 0 && [item.japanese, ...item.acceptedReadings].some((candidate) => normalizeReading(candidate) === normalizedAnswer);
+}
+
+function describeVocabularyMeaning(item: StudyItem) {
+  const meaning = item.meanings.map((value) => value.replace(/\s*\(\s*before a noun\s*\)/gi, "")).join(" · ");
+  const location = locationAnswerDetails[item.japanese];
+  if (location) return `${meaning} · ${location.formal ? "formal" : "informal"} · relatively ${location.distance}`;
+  const demonstrative = demonstrativeAnswerDetails[item.japanese];
+  if (demonstrative) return `${meaning} · ${demonstrative.beforeNoun ? "before a noun" : "standalone"} · relatively ${demonstrative.distance}`;
+  return meaning;
 }
 
 const locationAnswerDetails: Record<string, { meaning: "here" | "there"; formal: boolean; distance: "close" | "far"; optionalDistance?: boolean }> = {
@@ -168,13 +183,14 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   const [checked, setChecked] = useState<boolean | null>(null);
   const [results, setResults] = useState<{ correct: number; incorrect: number; skipped: number; mistakes: StudyItem[]; difficult: StudyItem[] }>({ correct: 0, incorrect: 0, skipped: 0, mistakes: [], difficult: [] });
   const [finished, setFinished] = useState(false);
-  const [quizSessionStatus, setQuizSessionStatus] = useState<"checking" | "prompt" | "ready">(mode === "quiz" ? "checking" : "ready");
+  const [quizSessionStatus, setQuizSessionStatus] = useState<"checking" | "prompt" | "setup" | "ready">(mode === "quiz" ? "checking" : "ready");
   const [pendingQuizSession, setPendingQuizSession] = useState<SavedQuizSession | null>(null);
   const [showQuitPrompt, setShowQuitPrompt] = useState(false);
   const [quizBaseItems, setQuizBaseItems] = useState<StudyItem[] | null>(null);
   const [progress, setProgress] = useState<ProgressStore>({ cards: {}, quizStats: { completedRuns: 0, correctAnswers: 0, completedRunIds: [] }, updatedAt: "" });
   const [quizRunId, setQuizRunId] = useState<string | null>(null);
   const [quizCountsAsSession, setQuizCountsAsSession] = useState(true);
+  const [vocabularyDirection, setVocabularyDirection] = useState<VocabularyQuizDirection>("japanese-to-english");
   const [showRomaji, setShowRomaji] = useState(false);
   const [smartShuffle, setSmartShuffle] = useState(mode === "quiz");
   const smartOriginalRemaining = useRef<StudyItem[] | null>(null);
@@ -183,6 +199,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   const router = useRouter();
   const current = items[index];
   const vocabularyQuiz = mode === "quiz" && subject === "vocabulary";
+  const englishToJapaneseQuiz = vocabularyQuiz && vocabularyDirection === "english-to-japanese";
   const kanjiInVocabulary = vocabularyQuiz && Boolean(current?.japanese.match(/\p{Script=Han}/u));
   const locationAnswer = vocabularyQuiz ? locationAnswerDetails[current?.japanese ?? ""] : undefined;
   const demonstrativeAnswer = vocabularyQuiz ? demonstrativeAnswerDetails[current?.japanese ?? ""] : undefined;
@@ -240,8 +257,13 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
         } else {
           if (savedSession) removeQuizSession(href);
           setItems(smartShuffleItems(selectedItems, saved));
-          setQuizRunId(createQuizRunId());
-          setQuizSessionStatus("ready");
+          if (subject === "vocabulary") {
+            setQuizRunId(null);
+            setQuizSessionStatus("setup");
+          } else {
+            setQuizRunId(createQuizRunId());
+            setQuizSessionStatus("ready");
+          }
         }
       } else {
         setItems(selectedItems);
@@ -267,6 +289,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
       id: href,
       runId: quizRunId ?? undefined,
       countsAsSession: quizCountsAsSession,
+      vocabularyDirection,
       href,
       chapterId,
       chapterTitle,
@@ -283,11 +306,11 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
       smartShuffle,
       updatedAt: new Date().toISOString(),
     });
-  }, [mode, quizSessionStatus, quizBaseItems, finished, items, index, answer, meaningAnswer, formalAnswer, beforeNounAnswer, distanceAnswer, checked, results, smartShuffle, chapterId, chapterTitle, subject, quizRunId, quizCountsAsSession]);
+  }, [mode, quizSessionStatus, quizBaseItems, finished, items, index, answer, meaningAnswer, formalAnswer, beforeNounAnswer, distanceAnswer, checked, results, smartShuffle, chapterId, chapterTitle, subject, quizRunId, quizCountsAsSession, vocabularyDirection]);
   useEffect(() => {
-    if (mode !== "quiz" || !finished || !quizRunId || !quizCountsAsSession) return;
+    if (mode !== "quiz" || !finished || !quizRunId || !quizCountsAsSession || results.correct + results.incorrect === 0) return;
     recordCompletedQuiz(quizRunId);
-  }, [mode, finished, quizRunId, quizCountsAsSession]);
+  }, [mode, finished, quizRunId, quizCountsAsSession, results.correct, results.incorrect]);
   const next = useCallback(() => {
     if (index >= items.length - 1) setFinished(true);
     else { setIndex((value) => value + 1); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setChecked(null); setRevealed(false); }
@@ -296,7 +319,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.isComposing) return;
-      if (event.key === "Escape") { router.push(subjectPath); return; }
+      if (event.key === "Escape") { if (mode === "quiz") setShowQuitPrompt(true); else router.push(subjectPath); return; }
       if ((event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) && !(mode === "quiz" && checked !== null && event.key === "Enter")) return;
       if (mode === "flashcards") {
         if (event.code === "Space") { event.preventDefault(); setRevealed((value) => !value); }
@@ -332,7 +355,9 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
         && (distanceAnswer === "" ? Boolean(locationAnswer?.optionalDistance || demonstrativeAnswer?.optionalDistance) : distanceAnswer === (locationAnswer?.distance ?? demonstrativeAnswer?.distance))
       : false;
     const correct = vocabularyQuiz
-      ? specialMeaningAnswer ? specialAnswerCorrect : matchesMeaning(answer, current.meanings, current.acceptedMeanings)
+      ? vocabularyDirection === "english-to-japanese"
+        ? matchesJapaneseVocabulary(answer, current)
+        : specialMeaningAnswer ? specialAnswerCorrect : matchesMeaning(answer, current.meanings, current.acceptedMeanings)
       : matchesKanjiAnswer(answer, meaningAnswer, current);
     playUiSound(correct ? "correct" : "incorrect");
     setChecked(correct);
@@ -390,6 +415,7 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
     setSmartShuffle(pendingQuizSession.smartShuffle);
     setQuizRunId(pendingQuizSession.runId ?? createQuizRunId());
     setQuizCountsAsSession(pendingQuizSession.countsAsSession ?? true);
+    setVocabularyDirection(pendingQuizSession.vocabularyDirection ?? "japanese-to-english");
     smartOriginalRemaining.current = null;
     setFinished(false);
     setPendingQuizSession(null);
@@ -400,14 +426,15 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
     const href = pendingQuizSession?.href ?? canonicalQuizHref(`${window.location.pathname}${window.location.search}`);
     removeQuizSession(href);
     setItems(smartShuffleItems(quizBaseItems, progress));
-    setQuizRunId(createQuizRunId());
+    setQuizRunId(subject === "vocabulary" ? null : createQuizRunId());
     setQuizCountsAsSession(true);
     setIndex(0);
     setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer("");
     setChecked(null); setResults(emptyResults()); setFinished(false); setSmartShuffle(true);
     smartOriginalRemaining.current = null;
     setPendingQuizSession(null);
-    setQuizSessionStatus("ready");
+    setVocabularyDirection("japanese-to-english");
+    setQuizSessionStatus(subject === "vocabulary" ? "setup" : "ready");
   };
   const confirmQuizExit = (event: ReactMouseEvent<HTMLAnchorElement>) => {
     if (mode !== "quiz") return;
@@ -418,42 +445,56 @@ export function StudySession({ chapterId, chapterTitle, subject, mode, initialIt
     removeQuizSession(canonicalQuizHref(`${window.location.pathname}${window.location.search}`));
     router.push(`/chapter/${chapterId}`);
   };
+  const startVocabularyQuiz = (direction: VocabularyQuizDirection) => {
+    setVocabularyDirection(direction);
+    setQuizRunId(createQuizRunId());
+    setQuizCountsAsSession(true);
+    setQuizSessionStatus("ready");
+  };
+  const cancelQuitPrompt = (event: ReactMouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    setShowQuitPrompt(false);
+  };
   const speak = () => { if (typeof window !== "undefined" && "speechSynthesis" in window) { const utterance = new SpeechSynthesisUtterance(current.japanese); utterance.lang = "ja-JP"; window.speechSynthesis.speak(utterance); } };
   const dueItems = useMemo(() => initialItems.filter((item) => { const due = progress.cards[item.key]?.nextReview; return due && new Date(due) <= new Date(); }), [initialItems, progress]);
   if (mode === "quiz" && quizSessionStatus === "checking") return <main className={`study-shell ${focusMode ? "focus-mode" : ""}`} aria-busy="true"><div className="quiz-session-loading">Preparing your quiz…</div></main>;
   if (mode === "quiz" && showQuitPrompt) return <main className={`study-shell ${focusMode ? "focus-mode" : ""}`}>
-    <div className="study-topline"><Link href={subjectPath} className="study-exit"><ArrowLeft size={15} /><span>{chapterTitle} <i>/</i> {subject}</span></Link><span className="study-mode-label">QUIZ IN PROGRESS<b> · </b> {chapterId}</span><span className="study-mode-right">{focusMode && <span>FOCUS MODE</span>}<Link href={`/chapter/${chapterId}`} onClick={confirmQuizExit}>EXIT <span>×</span></Link></span></div>
-    <section className="quiz-resume-prompt" aria-labelledby="quiz-quit-title"><p className="eyebrow"><span className="eyebrow-line" />QUIZ IN PROGRESS</p><h1 id="quiz-quit-title">Do you really want to quit?</h1><p>Your saved position, answers, and results for this quiz will be erased.</p><div><button type="button" className="button button-dark" onClick={() => setShowQuitPrompt(false)}>Keep quiz <ArrowRight size={15} /></button><button type="button" className="quiz-start-over" onClick={quitQuiz}>Quit quiz <X size={14} /></button></div></section>
+    <div className="study-topline"><Link href={subjectPath} className="study-exit" onClick={cancelQuitPrompt}><ArrowLeft size={15} /><span>{chapterTitle} <i>/</i> {subject}</span></Link><span className="study-mode-label">QUIZ IN PROGRESS<b> · </b> {chapterId}</span><span className="study-mode-right">{focusMode && <span>FOCUS MODE</span>}<Link href={`/chapter/${chapterId}`} onClick={(event) => { event.preventDefault(); quitQuiz(); }}>EXIT <span>×</span></Link></span></div>
+    <section className="quiz-resume-prompt" aria-labelledby="quiz-quit-title"><p className="eyebrow"><span className="eyebrow-line" />QUIZ IN PROGRESS</p><h1 id="quiz-quit-title">Do you really want to quit?</h1><p>Your saved position and answers for this quiz, if any, will be erased.</p><div><button type="button" className="button button-dark" onClick={() => setShowQuitPrompt(false)}>Keep quiz <ArrowRight size={15} /></button><button type="button" className="quiz-start-over" onClick={quitQuiz}>Quit quiz <X size={14} /></button></div></section>
   </main>;
   if (mode === "quiz" && quizSessionStatus === "prompt" && pendingQuizSession) return <main className={`study-shell ${focusMode ? "focus-mode" : ""}`}>
-    <div className="study-topline"><Link href={subjectPath} className="study-exit"><ArrowLeft size={15} /><span>{chapterTitle} <i>/</i> {subject}</span></Link><span className="study-mode-label">QUIZ IN PROGRESS<b> · </b> {chapterId}</span><span className="study-mode-right">{focusMode && <span>FOCUS MODE</span>}<Link href={`/chapter/${chapterId}`} onClick={confirmQuizExit}>EXIT <span>×</span></Link></span></div>
+    <div className="study-topline"><Link href={subjectPath} className="study-exit" onClick={confirmQuizExit}><ArrowLeft size={15} /><span>{chapterTitle} <i>/</i> {subject}</span></Link><span className="study-mode-label">QUIZ IN PROGRESS<b> · </b> {chapterId}</span><span className="study-mode-right">{focusMode && <span>FOCUS MODE</span>}<Link href={`/chapter/${chapterId}`} onClick={confirmQuizExit}>EXIT <span>×</span></Link></span></div>
     <section className="quiz-resume-prompt" aria-labelledby="quiz-resume-title"><p className="eyebrow"><span className="eyebrow-line" />SAVED IN THIS BROWSER</p><h1 id="quiz-resume-title">Continue your quiz?</h1><p>You were on question {Math.min(pendingQuizSession.index + 1, pendingQuizSession.itemKeys.length)} of {pendingQuizSession.itemKeys.length}. Your answers and quiz order are saved.</p><div><button type="button" className="button button-dark" onClick={continueSavedQuiz}>Continue quiz <ArrowRight size={15} /></button><button type="button" className="quiz-start-over" onClick={restartSavedQuiz}>Start over <RotateCcw size={14} /></button></div></section>
+  </main>;
+  if (mode === "quiz" && quizSessionStatus === "setup" && vocabularyQuiz && items.length > 0) return <main className={`study-shell ${focusMode ? "focus-mode" : ""}`}>
+    <div className="study-topline"><Link href={subjectPath} className="study-exit" onClick={confirmQuizExit}><ArrowLeft size={15} /><span>{chapterTitle} <i>/</i> {subject}</span></Link><span className="study-mode-label">VOCABULARY QUIZ<b> · </b> {chapterId}</span><span className="study-mode-right">{focusMode && <span>FOCUS MODE</span>}<Link href={`/chapter/${chapterId}`} onClick={confirmQuizExit}>EXIT <span>×</span></Link></span></div>
+    <section className="quiz-resume-prompt" aria-labelledby="quiz-direction-title"><p className="eyebrow"><span className="eyebrow-line" />CHOOSE YOUR RECALL DIRECTION</p><h1 id="quiz-direction-title">Which side first?</h1><p>Choose what you want to recall from each vocabulary prompt.</p><div className="quiz-direction-options"><button type="button" className="quiz-direction-choice" onClick={() => startVocabularyQuiz("japanese-to-english")}><span><strong>Japanese → English</strong><small>See the Japanese word; enter its meaning.</small></span><ArrowRight size={15} /></button><button type="button" className="quiz-direction-choice" onClick={() => startVocabularyQuiz("english-to-japanese")}><span><strong>English → Japanese</strong><small>See the meaning; enter the Japanese word.</small></span><ArrowRight size={15} /></button></div></section>
   </main>;
   if (mode !== "learn" && items.length === 0) return <main className="study-shell"><div className="study-empty"><span>頁</span><h1>No cards in this chapter yet.</h1><p>When you add vocabulary or kanji examples, you’ll find them here.</p><Link className="button button-dark" href={subjectPath}>Back to {subject}</Link></div></main>;
 
   return <main className={`study-shell ${focusMode ? "focus-mode" : "learn-mode"}`}>
-    <div className="study-topline"><Link href={subjectPath} className="study-exit"><ArrowLeft size={15} /><span>{chapterTitle} <i>/</i> {subject}</span></Link><span className="study-mode-label">{mode === "quiz" ? vocabularyQuiz ? "MEANING PRACTICE" : "READING PRACTICE" : mode === "flashcards" ? "FLASHCARDS" : "STUDY LIBRARY"}<b> · </b> {chapterId}</span><span className="study-mode-right">{focusMode && <span>FOCUS MODE</span>}<Link href={`/chapter/${chapterId}`} onClick={confirmQuizExit}>EXIT <span>×</span></Link></span></div>
+    <div className="study-topline"><Link href={subjectPath} className="study-exit" onClick={mode === "quiz" ? confirmQuizExit : undefined}><ArrowLeft size={15} /><span>{chapterTitle} <i>/</i> {subject}</span></Link><span className="study-mode-label">{mode === "quiz" ? englishToJapaneseQuiz ? "JAPANESE WORD PRACTICE" : vocabularyQuiz ? "MEANING PRACTICE" : "READING PRACTICE" : mode === "flashcards" ? "FLASHCARDS" : "STUDY LIBRARY"}<b> · </b> {chapterId}</span><span className="study-mode-right">{focusMode && <span>FOCUS MODE</span>}<Link href={`/chapter/${chapterId}`} onClick={mode === "quiz" ? confirmQuizExit : undefined}>EXIT <span>×</span></Link></span></div>
     {mode === "learn" ? <LearnView items={items} subject={subject} progress={progress} showRomaji={showRomaji} setShowRomaji={setShowRomaji} chapterId={chapterId} dueCount={dueItems.length} onShuffle={shuffle} /> : finished ? <Results results={results} itemsLength={items.length} restart={restart} mistakesOnly={() => { setQuizRunId(createQuizRunId()); setQuizCountsAsSession(false); smartOriginalRemaining.current = smartShuffle ? results.mistakes : null; setItems(smartShuffle ? smartShuffleItems(results.mistakes, progress) : results.mistakes); setIndex(0); setFinished(false); setResults(emptyResults()); setAnswer(""); setMeaningAnswer(""); setFormalAnswer(false); setBeforeNounAnswer(false); setDistanceAnswer(""); setChecked(null); setRevealed(false); }} /> : <>
       <div className={`session-progress ${mode === "quiz" ? "with-smart-shuffle" : ""}`}><span>{String(index + 1).padStart(2, "0")} <i>/</i> {String(items.length).padStart(2, "0")}</span><div><i style={{ width: `${((index + 1) / items.length) * 100}%` }} /></div>{mode === "quiz" && <button type="button" className={`smart-shuffle-toggle ${smartShuffle ? "is-active" : ""}`} aria-pressed={smartShuffle} title="Prioritize missed and difficult cards; shuffle ties." disabled={checked !== null} onClick={toggleSmartShuffle}><Shuffle size={12} /> SMART {smartShuffle ? "ON" : "OFF"}</button>}<button onClick={skip}>Skip <ArrowRight size={13} /></button></div>
       <div className="study-card-stage" key={current?.key}>
         <div className="study-context">{current?.kanji && <span className="kanji-chip">KANJI {current.kanji}</span>}<span>{current?.category ?? (current?.kanji ? `${current.strokeCount} STROKES` : "CHAPTER WORD")}</span><button className="audio-button" onClick={speak} aria-label="Play Japanese pronunciation"><Volume2 size={16} /></button></div>
-        <div className="study-prompt"><span className={`prompt-japanese ${mode === "flashcards" && activeDirection === "reverse" ? "prompt-english" : ""}`}>{mode === "flashcards" && activeDirection === "reverse" ? current?.meanings.join(" · ") : kanjiInVocabulary ? renderKotobaWithFurigana(current?.japanese ?? "", current?.reading ?? "") : current?.japanese}</span>{mode === "quiz" ? <span className="prompt-meaning">{vocabularyQuiz ? "TYPE THE ENGLISH MEANING" : "TYPE THE READING + ENGLISH MEANING"}</span> : (mode !== "flashcards" || (Boolean(current?.kanji) && activeDirection !== "meaning") || activeDirection === "reverse") && <span className="prompt-meaning">{mode === "flashcards" && activeDirection === "reverse" ? "FIND THE JAPANESE" : current?.meanings.join(" · ")}</span>}</div>
+        <div className="study-prompt"><span className={`prompt-japanese ${mode === "flashcards" && activeDirection === "reverse" || englishToJapaneseQuiz ? "prompt-english" : ""}`}>{mode === "flashcards" && activeDirection === "reverse" ? current?.meanings.join(" · ") : englishToJapaneseQuiz ? describeVocabularyMeaning(current!) : kanjiInVocabulary ? renderKotobaWithFurigana(current?.japanese ?? "", current?.reading ?? "") : current?.japanese}</span>{mode === "quiz" ? <span className="prompt-meaning">{englishToJapaneseQuiz ? "TYPE THE JAPANESE WORD" : vocabularyQuiz ? "TYPE THE ENGLISH MEANING" : "TYPE THE READING + ENGLISH MEANING"}</span> : (mode !== "flashcards" || (Boolean(current?.kanji) && activeDirection !== "meaning") || activeDirection === "reverse") && <span className="prompt-meaning">{mode === "flashcards" && activeDirection === "reverse" ? "FIND THE JAPANESE" : current?.meanings.join(" · ")}</span>}</div>
         {mode === "flashcards" ? <div className={`flash-reveal ${revealed ? "is-revealed" : ""}`}>
           {revealed ? <><span className="answer-reading">{activeDirection === "reverse" ? current?.japanese : activeDirection === "meaning" ? current?.meanings.join(" · ") : current?.reading}</span><span className="answer-romaji">{activeDirection === "reverse" ? current?.reading : romaji(current?.reading ?? "")}</span>{activeDirection !== "meaning" && <span className="answer-meaning">{current?.meanings.join(" · ")}</span>}<div className="answer-actions"><button className="answer-wrong" onClick={() => mark(false)}>Again</button><button className="difficult-button" onClick={() => { setDifficult(current.key, true); mark(false, true); }}>Difficult</button><button className="answer-correct" onClick={() => mark(true)}>I knew it <Check size={15} /></button></div></> : <button className="reveal-button" onClick={() => setRevealed(true)}>Reveal answer <span>SPACE</span></button>}
         </div> : <div className="quiz-answer-area">
           <form className="answer-form" onSubmit={(event) => { event.preventDefault(); if (!(event.nativeEvent as Event & { isComposing?: boolean }).isComposing && !composingRef.current) submit(); }}>
-            <label htmlFor="reading-answer">YOUR ANSWER <span>{vocabularyQuiz ? "ENGLISH" : "HIRAGANA / ROMAJI + ENGLISH"}</span></label>
+            <label htmlFor="reading-answer">YOUR ANSWER <span>{vocabularyQuiz ? englishToJapaneseQuiz ? "JAPANESE" : "ENGLISH" : "HIRAGANA / ROMAJI + ENGLISH"}</span></label>
             <div className={`answer-input-wrap ${checked === null ? "" : vocabularyQuiz ? checked ? "input-correct" : "input-wrong" : current?.acceptedAnswerPairs ? checked ? "input-correct" : "input-wrong" : matchesReading(answer, current?.acceptedReadings ?? []) ? "input-correct" : "input-wrong"}`}>
-              <input ref={inputRef} id="reading-answer" aria-label={vocabularyQuiz ? "English meaning" : "Hiragana reading; Romaji accepted"} autoComplete="off" autoCapitalize="off" spellCheck={vocabularyQuiz} lang={vocabularyQuiz ? "en" : "ja"} inputMode="text" placeholder={vocabularyQuiz ? "Type the meaning…" : "Type Hiragana or Romaji…"} value={answer} onChange={(event) => vocabularyQuiz ? setAnswer(event.target.value) : updateReadingAnswer(event.currentTarget)} onCompositionStart={() => { composingRef.current = true; }} onCompositionEnd={() => { composingRef.current = false; }} disabled={checked !== null} />
+              <input ref={inputRef} id="reading-answer" aria-label={vocabularyQuiz ? englishToJapaneseQuiz ? "Japanese word; Hiragana, Katakana, Kanji, or Romaji accepted" : "English meaning" : "Hiragana reading; Romaji accepted"} autoComplete="off" autoCapitalize="off" spellCheck={vocabularyQuiz && !englishToJapaneseQuiz} lang={vocabularyQuiz && !englishToJapaneseQuiz ? "en" : "ja"} inputMode="text" placeholder={vocabularyQuiz ? englishToJapaneseQuiz ? "Type the Japanese word…" : "Type the meaning…" : "Type Hiragana or Romaji…"} value={answer} onChange={(event) => vocabularyQuiz ? setAnswer(event.target.value) : updateReadingAnswer(event.currentTarget)} onCompositionStart={() => { composingRef.current = true; }} onCompositionEnd={() => { composingRef.current = false; }} disabled={checked !== null} />
               <span>↵</span>
             </div>
             {!vocabularyQuiz && <div className={`answer-input-wrap meaning-answer-wrap ${checked === null ? "" : current?.acceptedAnswerPairs ? checked ? "input-correct" : "input-wrong" : matchesMeaning(meaningAnswer, current?.meanings ?? [], current?.acceptedMeanings) ? "input-correct" : "input-wrong"}`}>
               <input id="meaning-answer" aria-label="English meaning (Kotoba IME: Alphanumeric)" autoComplete="off" autoCapitalize="off" spellCheck lang="en" inputMode="text" placeholder="Type the English meaning…" value={meaningAnswer} onChange={(event) => setMeaningAnswer(event.target.value)} disabled={checked !== null} />
             </div>}
-            {(locationAnswer || demonstrativeAnswer) && <SpecialMeaningControls location={locationAnswer} demonstrative={demonstrativeAnswer} formal={formalAnswer} setFormal={setFormalAnswer} beforeNoun={beforeNounAnswer} setBeforeNoun={setBeforeNounAnswer} distance={distanceAnswer} setDistance={setDistanceAnswer} disabled={checked !== null} />}
-            {checked === null ? <button type="submit" className="button button-dark check-button" disabled={!answer.trim() || (!vocabularyQuiz && !meaningAnswer.trim()) || Boolean((locationAnswer || demonstrativeAnswer) && !distanceAnswer && !(locationAnswer?.optionalDistance || demonstrativeAnswer?.optionalDistance))}>Check answer <ArrowRight size={15} /></button> : <div className={`quiz-feedback ${checked ? "feedback-correct" : "feedback-wrong"}`}><div><strong>{checked ? "Correct." : "Not quite."}</strong><span>{vocabularyQuiz ? current?.meanings.join(" · ") : current?.acceptedAnswerPairs ? current.acceptedAnswerPairs.map((pair) => `${pair.acceptedReadings.join(" / ")} (${pair.acceptedReadings.map(romaji).join(" / ")}) — ${pair.meanings.join(" / ")}`).join(" · ") : <>{current?.reading} <i>·</i> {romaji(current?.reading ?? "")} <i>·</i> {current?.meanings.join(" · ")}</>}</span></div><button type="button" className="flag-difficult" onClick={flagDifficult}>{results.difficult.some((item) => item.key === current?.key) ? "Marked difficult" : "Mark difficult"}</button><button type="button" onClick={next}>Continue <ArrowRight size={15} /></button></div>}
+            {(locationAnswer || demonstrativeAnswer) && !englishToJapaneseQuiz && <SpecialMeaningControls location={locationAnswer} demonstrative={demonstrativeAnswer} formal={formalAnswer} setFormal={setFormalAnswer} beforeNoun={beforeNounAnswer} setBeforeNoun={setBeforeNounAnswer} distance={distanceAnswer} setDistance={setDistanceAnswer} disabled={checked !== null} />}
+            {checked === null ? <button type="submit" className="button button-dark check-button" disabled={!answer.trim() || (!vocabularyQuiz && !meaningAnswer.trim()) || Boolean(!englishToJapaneseQuiz && (locationAnswer || demonstrativeAnswer) && !distanceAnswer && !(locationAnswer?.optionalDistance || demonstrativeAnswer?.optionalDistance))}>Check answer <ArrowRight size={15} /></button> : <div className={`quiz-feedback ${checked ? "feedback-correct" : "feedback-wrong"}`}><div><strong>{checked ? "Correct." : "Not quite."}</strong><span>{vocabularyQuiz ? englishToJapaneseQuiz ? <>{current?.japanese} <i>·</i> {current?.reading}</> : current?.meanings.join(" · ") : current?.acceptedAnswerPairs ? current.acceptedAnswerPairs.map((pair) => `${pair.acceptedReadings.join(" / ")} (${pair.acceptedReadings.map(romaji).join(" / ")}) — ${pair.meanings.join(" / ")}`).join(" · ") : <>{current?.reading} <i>·</i> {romaji(current?.reading ?? "")} <i>·</i> {current?.meanings.join(" · ")}</>}</span></div><button type="button" className="flag-difficult" onClick={flagDifficult}>{results.difficult.some((item) => item.key === current?.key) ? "Marked difficult" : "Mark difficult"}</button><button type="button" onClick={next}>Continue <ArrowRight size={15} /></button></div>}
           </form>
-          <p className="answer-hint">{vocabularyQuiz ? "Enter the English meaning. Hiragana readings appear above kanji." : "Enter the reading in Hiragana or Romaji, plus one of the English meanings. Katakana is accepted too."}</p>
+          <p className="answer-hint">{vocabularyQuiz ? englishToJapaneseQuiz ? "Enter the Japanese word. Hiragana, Katakana, Kanji, or Romaji readings are accepted." : "Enter the English meaning. Hiragana readings appear above kanji." : "Enter the reading in Hiragana or Romaji, plus one of the English meanings. Katakana is accepted too."}</p>
         </div>}
         {current?.notes && <p className="study-note">NOTE <span>{current.notes}</span></p>}
       </div>
