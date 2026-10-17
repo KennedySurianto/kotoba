@@ -27,7 +27,7 @@ export function SubjectExperience({ chapter, subject }: { chapter: Chapter; subj
     <div className="mode-grid">
       <ModeCard href={`/chapter/${chapter.id}/study/${subject}/learn`} num="01" title="Learn" japanese="学ぶ" description={vocabulary ? "Browse, search, and listen to the chapter words." : "Explore characters, readings, and their examples."} count={`${count} cards`} />
       <ModeCard href={`/chapter/${chapter.id}/study/${subject}/flashcards`} num="02" title="Flashcards" japanese="カード" description="Recall first, reveal when you’re ready. Move at your own pace." count="SELF-PACED" />
-      <ModeCard href={`/chapter/${chapter.id}/study/${subject}/quiz`} num="03" title="Reading quiz" japanese="読み方" description="Type the reading in Hiragana. The meaning gives each answer its context." count="TYPE TO RECALL" />
+      <ModeCard href={`/chapter/${chapter.id}/study/${subject}/quiz`} num="03" title="Reading quiz" japanese="読み方" description={vocabulary ? "Recall the Japanese word or its English meaning, depending on your chosen quiz direction." : "Enter each reading in Hiragana or Katakana; romaji converts as you type. Then enter its English meaning."} count="TYPE TO RECALL" />
     </div>
     <Link className="back-link" href={`/chapter/${chapter.id}`}><ArrowLeft size={14} /> Back to chapter</Link>
   </main>;
