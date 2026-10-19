@@ -9,6 +9,7 @@ import type { Chapter } from "@/lib/chapters/schema";
 import { exportProgress, importProgress, loadProgress, type ProgressStore } from "@/lib/storage/progress";
 import { getLatestQuizSession, type SavedQuizSession } from "@/lib/storage/quiz-sessions";
 import { getLastStudyActivity, type StudyActivity } from "@/lib/storage/study-activity";
+import { getNumbersPracticeSession, type SavedNumbersPractice } from "@/lib/storage/numbers-practice";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -22,6 +23,7 @@ const methodSteps = [
 export function HomeExperience({ chapters }: { chapters: Chapter[] }) {
   const [progress, setProgress] = useState<ProgressStore>({ cards: {}, quizStats: { completedRuns: 0, correctAnswers: 0, completedRunIds: [] }, updatedAt: "" });
   const [ongoingQuiz, setOngoingQuiz] = useState<SavedQuizSession | null>(null);
+  const [ongoingNumbersPractice, setOngoingNumbersPractice] = useState<SavedNumbersPractice | null>(null);
   const [lastStudyActivity, setLastStudyActivity] = useState<StudyActivity | null>(null);
   const [activeMethodStep, setActiveMethodStep] = useState(0);
   const activeMethodStepRef = useRef(0);
@@ -38,7 +40,7 @@ export function HomeExperience({ chapters }: { chapters: Chapter[] }) {
   }, [chapters]);
   const [heroFigure, setHeroFigure] = useState<{ character: string; meaning: string } | null>(null);
   useEffect(() => {
-    const refreshLocalState = () => { setProgress(loadProgress()); setOngoingQuiz(getLatestQuizSession()); setLastStudyActivity(getLastStudyActivity()); };
+    const refreshLocalState = () => { setProgress(loadProgress()); setOngoingQuiz(getLatestQuizSession()); setOngoingNumbersPractice(getNumbersPracticeSession()); setLastStudyActivity(getLastStudyActivity()); };
     const timer = window.setTimeout(refreshLocalState, 0);
     window.addEventListener("storage", refreshLocalState);
     return () => { window.clearTimeout(timer); window.removeEventListener("storage", refreshLocalState); };
@@ -95,6 +97,7 @@ export function HomeExperience({ chapters }: { chapters: Chapter[] }) {
   const answeredAt = mostRecentAnsweredCard?.[1].lastStudied ?? "";
   const activityIsNewer = Boolean(activityChapter && lastStudyActivity && lastStudyActivity.updatedAt >= answeredAt);
   const lastChapter = activityIsNewer ? activityChapter : answeredChapter ?? activityChapter ?? firstChapter;
+  const resumeNumbersPractice = Boolean(ongoingNumbersPractice && (!ongoingQuiz || ongoingNumbersPractice.updatedAt > ongoingQuiz.updatedAt));
   const downloadBackup = () => {
     const url = URL.createObjectURL(new Blob([exportProgress()], { type: "application/json" }));
     const anchor = document.createElement("a"); anchor.href = url; anchor.download = "kotoba-progress.json"; anchor.click(); URL.revokeObjectURL(url);
@@ -156,13 +159,15 @@ export function HomeExperience({ chapters }: { chapters: Chapter[] }) {
       <div className="collection-foot"><span>{String(chapters.length).padStart(2, "0")} CHAPTERS IN YOUR COLLECTION</span><span>ADDED AT YOUR OWN PACE <span className="red-dot">●</span></span></div>
     </div></section>
 
+    <section className="numbers-practice-promo wrap"><div><p className="eyebrow"><span className="eyebrow-line" />A LITTLE EXTRA PRACTICE</p><h2>Numbers in <em>everyday life.</em></h2><p>Practice prices, age, dates, time, and the days of the week.</p></div><Link className="button button-dark" href="/practice/numbers">Explore number practice <ArrowUpRight size={15} /></Link></section>
+
     <section className="practice-section wrap">
       <div className="practice-heading"><p className="eyebrow"><span className="eyebrow-line" />A PRACTICE THAT REMEMBERS</p><h2>Progress, at <em>your pace.</em></h2></div>
       <div className="stats-grid">
         <div className="stat-cell"><span className="stat-label"><CirclePlay size={13} /> QUIZ SESSIONS</span><strong>{String(progress.quizStats.completedRuns).padStart(2, "0")}</strong><span className="stat-foot">quizzes completed</span></div>
         <div className="stat-cell"><span className="stat-label"><CirclePlay size={13} /> CORRECT QUIZ ANSWERS</span><strong>{String(progress.quizStats.correctAnswers).padStart(2, "0")}</strong><span className="stat-foot">answered correctly</span></div>
         <div className="continue-cell">
-          {ongoingQuiz ? <><span className="stat-label">QUIZ IN PROGRESS</span><p>{ongoingQuiz.chapterTitle}<br /><strong>{ongoingQuiz.subject} · {ongoingQuiz.chapterId}</strong></p><Link className="text-link" href={ongoingQuiz.href}>Resume quiz · {Math.min(ongoingQuiz.index + 1, ongoingQuiz.itemKeys.length)}/{ongoingQuiz.itemKeys.length} <ArrowRight size={15} /></Link></> : lastChapter ? <><span className="stat-label">{activityChapter || answeredChapter ? "PICK UP WHERE YOU LEFT OFF" : "START WHERE YOU ARE"}</span><p>{lastChapter.titleJapanese}<br /><strong>{lastChapter.title}</strong></p><Link className="text-link" href={`/chapter/${lastChapter.id}`}>Choose a study mode <ArrowRight size={15} /></Link></> : <span className="stat-foot">Your next study session will appear here.</span>}
+          {resumeNumbersPractice && ongoingNumbersPractice ? <><span className="stat-label">QUIZ IN PROGRESS</span><p>Numbers & everyday Japanese<br /><strong>{ongoingNumbersPractice.categoryIds.length} categories</strong></p><Link className="text-link" href="/practice/numbers">Resume practice · {Math.min(ongoingNumbersPractice.index + 1, ongoingNumbersPractice.questionIds.length)}/{ongoingNumbersPractice.questionIds.length} <ArrowRight size={15} /></Link></> : ongoingQuiz ? <><span className="stat-label">QUIZ IN PROGRESS</span><p>{ongoingQuiz.chapterTitle}<br /><strong>{ongoingQuiz.subject} · {ongoingQuiz.chapterId}</strong></p><Link className="text-link" href={ongoingQuiz.href}>Resume quiz · {Math.min(ongoingQuiz.index + 1, ongoingQuiz.itemKeys.length)}/{ongoingQuiz.itemKeys.length} <ArrowRight size={15} /></Link></> : lastChapter ? <><span className="stat-label">{activityChapter || answeredChapter ? "PICK UP WHERE YOU LEFT OFF" : "START WHERE YOU ARE"}</span><p>{lastChapter.titleJapanese}<br /><strong>{lastChapter.title}</strong></p><Link className="text-link" href={`/chapter/${lastChapter.id}`}>Choose a study mode <ArrowRight size={15} /></Link></> : <span className="stat-foot">Your next study session will appear here.</span>}
         </div>
       </div>
       <div className="progress-backup"><span>YOUR PRACTICE LIVES IN THIS BROWSER.</span><div><button onClick={downloadBackup}><Download size={13} /> Export backup</button><button onClick={() => backupInput.current?.click()}><Upload size={13} /> Import backup</button><input ref={backupInput} type="file" accept="application/json,.json" hidden onChange={(event) => restoreBackup(event.target.files?.[0])} /></div></div>
