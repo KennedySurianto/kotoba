@@ -1,0 +1,1407 @@
+{
+  "id": "03",
+  "title": "Chapter 03",
+  "titleJapanese": "時間・予定・毎日の生活",
+  "description": "Opening hours, schedules, and everyday routines.",
+  "vocabulary": [
+    {
+      "id": "v001",
+      "japanese": "週末",
+      "reading": "しゅうまつ",
+      "meanings": [
+        "Weekend"
+      ],
+      "acceptedMeanings": [
+        "weekends",
+        "the end of the week"
+      ],
+      "acceptedReadings": [
+        "しゅうまつ"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v002",
+      "japanese": "今",
+      "reading": "いま",
+      "meanings": [
+        "Now"
+      ],
+      "acceptedMeanings": [
+        "right now",
+        "at this moment",
+        "currently"
+      ],
+      "acceptedReadings": [
+        "いま"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v003",
+      "japanese": "午前",
+      "reading": "ごぜん",
+      "meanings": [
+        "AM"
+      ],
+      "acceptedMeanings": [
+        "morning",
+        "a.m.",
+        "before noon",
+        "forenoon"
+      ],
+      "acceptedReadings": [
+        "ごぜん"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v004",
+      "japanese": "午後",
+      "reading": "ごご",
+      "meanings": [
+        "PM"
+      ],
+      "acceptedMeanings": [
+        "afternoon",
+        "p.m.",
+        "after noon"
+      ],
+      "acceptedReadings": [
+        "ごご"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v005",
+      "japanese": "昼",
+      "reading": "ひる",
+      "meanings": [
+        "Noon",
+        "Daytime"
+      ],
+      "acceptedMeanings": [
+        "midday",
+        "daytime",
+        "noontime"
+      ],
+      "acceptedReadings": [
+        "ひる"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v006",
+      "japanese": "銀行",
+      "reading": "ぎんこう",
+      "meanings": [
+        "Bank"
+      ],
+      "acceptedMeanings": [
+        "financial institution",
+        "banking institution"
+      ],
+      "acceptedReadings": [
+        "ぎんこう"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v007",
+      "japanese": "体育館",
+      "reading": "たいいくかん",
+      "meanings": [
+        "Gymnasium"
+      ],
+      "acceptedMeanings": [
+        "gym",
+        "sports hall",
+        "indoor sports facility"
+      ],
+      "acceptedReadings": [
+        "たいいくかん"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v008",
+      "japanese": "図書館",
+      "reading": "としょかん",
+      "meanings": [
+        "Library"
+      ],
+      "acceptedMeanings": [
+        "library",
+        "public library"
+      ],
+      "acceptedReadings": [
+        "としょかん"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v009",
+      "japanese": "病院",
+      "reading": "びょういん",
+      "meanings": [
+        "Hospital"
+      ],
+      "acceptedMeanings": [
+        "medical center",
+        "hospital"
+      ],
+      "acceptedReadings": [
+        "びょういん"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v010",
+      "japanese": "郵便局",
+      "reading": "ゆうびんきょく",
+      "meanings": [
+        "Post office"
+      ],
+      "acceptedMeanings": [
+        "post office",
+        "postal office"
+      ],
+      "acceptedReadings": [
+        "ゆうびんきょく"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v011",
+      "japanese": "授業",
+      "reading": "じゅぎょう",
+      "meanings": [
+        "Class",
+        "Lesson"
+      ],
+      "acceptedMeanings": [
+        "class",
+        "lesson",
+        "course"
+      ],
+      "acceptedReadings": [
+        "じゅぎょう"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v012",
+      "japanese": "テスト",
+      "reading": "てすと",
+      "meanings": [
+        "Test"
+      ],
+      "acceptedMeanings": [
+        "exam",
+        "examination",
+        "quiz"
+      ],
+      "acceptedReadings": [
+        "てすと"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v013",
+      "japanese": "休み",
+      "reading": "やすみ",
+      "meanings": [
+        "Holiday",
+        "Day off"
+      ],
+      "acceptedMeanings": [
+        "day off",
+        "holiday",
+        "break",
+        "vacation"
+      ],
+      "acceptedReadings": [
+        "やすみ"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v014",
+      "japanese": "時間",
+      "reading": "じかん",
+      "meanings": [
+        "Time",
+        "Hours"
+      ],
+      "acceptedMeanings": [
+        "time",
+        "hours",
+        "duration",
+        "period of time"
+      ],
+      "acceptedReadings": [
+        "じかん"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v015",
+      "japanese": "〜時",
+      "reading": "じ",
+      "meanings": [
+        "O'clock"
+      ],
+      "acceptedMeanings": [
+        "hour",
+        "o'clock",
+        "hours"
+      ],
+      "acceptedReadings": [
+        "じ"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v016",
+      "japanese": "〜分",
+      "reading": "ふん",
+      "meanings": [
+        "Minute(s)"
+      ],
+      "acceptedMeanings": [
+        "minute",
+        "minutes"
+      ],
+      "acceptedReadings": [
+        "ふん",
+        "ぷん"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v017",
+      "japanese": "〜時半",
+      "reading": "じはん",
+      "meanings": [
+        "Half past the hour"
+      ],
+      "acceptedMeanings": [
+        "half past",
+        "half past the hour"
+      ],
+      "acceptedReadings": [
+        "じはん"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v018",
+      "japanese": "〜曜日",
+      "reading": "ようび",
+      "meanings": [
+        "Day of the week"
+      ],
+      "acceptedMeanings": [
+        "day of the week",
+        "weekday"
+      ],
+      "acceptedReadings": [
+        "ようび"
+      ],
+      "category": "01 何時（なんじ）までですか"
+    },
+    {
+      "id": "v019",
+      "japanese": "スケジュール",
+      "reading": "すけじゅーる",
+      "meanings": [
+        "Schedule"
+      ],
+      "acceptedMeanings": [
+        "plans",
+        "timetable",
+        "agenda"
+      ],
+      "acceptedReadings": [
+        "すけじゅーる"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v020",
+      "japanese": "アルバイト",
+      "reading": "あるばいと",
+      "meanings": [
+        "Part-time job"
+      ],
+      "acceptedMeanings": [
+        "part-time work",
+        "part-time employment",
+        "temporary job"
+      ],
+      "acceptedReadings": [
+        "あるばいと"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v021",
+      "japanese": "スキー",
+      "reading": "すきー",
+      "meanings": [
+        "Skiing"
+      ],
+      "acceptedMeanings": [
+        "skiing",
+        "the sport of skiing"
+      ],
+      "acceptedReadings": [
+        "すきー"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v022",
+      "japanese": "パーティー",
+      "reading": "ぱーてぃー",
+      "meanings": [
+        "Party"
+      ],
+      "acceptedMeanings": [
+        "gathering",
+        "celebration",
+        "party"
+      ],
+      "acceptedReadings": [
+        "ぱーてぃー"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v023",
+      "japanese": "バーベキュー",
+      "reading": "ばーべきゅー",
+      "meanings": [
+        "Barbecue"
+      ],
+      "acceptedMeanings": [
+        "BBQ",
+        "cookout",
+        "barbecue"
+      ],
+      "acceptedReadings": [
+        "ばーべきゅー"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v024",
+      "japanese": "花火",
+      "reading": "はなび",
+      "meanings": [
+        "Fireworks"
+      ],
+      "acceptedMeanings": [
+        "firework display",
+        "fireworks display"
+      ],
+      "acceptedReadings": [
+        "はなび"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v025",
+      "japanese": "お花見",
+      "reading": "おはなみ",
+      "meanings": [
+        "Cherry blossom viewing"
+      ],
+      "acceptedMeanings": [
+        "flower viewing",
+        "hanami",
+        "cherry blossom viewing"
+      ],
+      "acceptedReadings": [
+        "おはなみ"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v026",
+      "japanese": "ホームステイ",
+      "reading": "ほーむすてい",
+      "meanings": [
+        "Homestay"
+      ],
+      "acceptedMeanings": [
+        "staying with a host family",
+        "host-family stay"
+      ],
+      "acceptedReadings": [
+        "ほーむすてい"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v027",
+      "japanese": "お祭り",
+      "reading": "おまつり",
+      "meanings": [
+        "Festival"
+      ],
+      "acceptedMeanings": [
+        "festival",
+        "fair",
+        "festivities"
+      ],
+      "acceptedReadings": [
+        "おまつり"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v028",
+      "japanese": "海",
+      "reading": "うみ",
+      "meanings": [
+        "Sea",
+        "Beach"
+      ],
+      "acceptedMeanings": [
+        "ocean",
+        "beach",
+        "sea"
+      ],
+      "acceptedReadings": [
+        "うみ"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v029",
+      "japanese": "公園",
+      "reading": "こうえん",
+      "meanings": [
+        "Park"
+      ],
+      "acceptedMeanings": [
+        "public park",
+        "park"
+      ],
+      "acceptedReadings": [
+        "こうえん"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v030",
+      "japanese": "桜",
+      "reading": "さくら",
+      "meanings": [
+        "Cherry blossom"
+      ],
+      "acceptedMeanings": [
+        "cherry tree",
+        "cherry blossoms"
+      ],
+      "acceptedReadings": [
+        "さくら"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v031",
+      "japanese": "お酒",
+      "reading": "おさけ",
+      "meanings": [
+        "Alcohol",
+        "Sake"
+      ],
+      "acceptedMeanings": [
+        "alcoholic drink",
+        "alcohol",
+        "sake"
+      ],
+      "acceptedReadings": [
+        "おさけ",
+        "さけ"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v032",
+      "japanese": "おすし",
+      "reading": "おすし",
+      "meanings": [
+        "Sushi"
+      ],
+      "acceptedMeanings": [
+        "sushi",
+        "sushi dish"
+      ],
+      "acceptedReadings": [
+        "おすし"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v033",
+      "japanese": "バス",
+      "reading": "ばす",
+      "meanings": [
+        "Bus"
+      ],
+      "acceptedMeanings": [
+        "coach",
+        "bus"
+      ],
+      "acceptedReadings": [
+        "ばす"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v034",
+      "japanese": "お弁当",
+      "reading": "おべんとう",
+      "meanings": [
+        "Boxed lunch"
+      ],
+      "acceptedMeanings": [
+        "packed lunch",
+        "bento",
+        "lunch box"
+      ],
+      "acceptedReadings": [
+        "おべんとう",
+        "べんとう"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v035",
+      "japanese": "留学生",
+      "reading": "りゅうがくせい",
+      "meanings": [
+        "International student"
+      ],
+      "acceptedMeanings": [
+        "foreign student",
+        "student from abroad",
+        "international student"
+      ],
+      "acceptedReadings": [
+        "りゅうがくせい"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v036",
+      "japanese": "1年",
+      "reading": "いちねん",
+      "meanings": [
+        "One year",
+        "First year"
+      ],
+      "acceptedMeanings": [
+        "a year",
+        "one year",
+        "first year"
+      ],
+      "acceptedReadings": [
+        "いちねん"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v037",
+      "japanese": "春",
+      "reading": "はる",
+      "meanings": [
+        "Spring"
+      ],
+      "acceptedMeanings": [
+        "springtime",
+        "spring"
+      ],
+      "acceptedReadings": [
+        "はる"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v038",
+      "japanese": "夏",
+      "reading": "なつ",
+      "meanings": [
+        "Summer"
+      ],
+      "acceptedMeanings": [
+        "summertime",
+        "summer"
+      ],
+      "acceptedReadings": [
+        "なつ"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v039",
+      "japanese": "秋",
+      "reading": "あき",
+      "meanings": [
+        "Autumn"
+      ],
+      "acceptedMeanings": [
+        "fall",
+        "autumn"
+      ],
+      "acceptedReadings": [
+        "あき"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v040",
+      "japanese": "冬",
+      "reading": "ふゆ",
+      "meanings": [
+        "Winter"
+      ],
+      "acceptedMeanings": [
+        "wintertime",
+        "winter"
+      ],
+      "acceptedReadings": [
+        "ふゆ"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v041",
+      "japanese": "ゴールデンウィーク",
+      "reading": "ごーるでんうぃーく",
+      "meanings": [
+        "Golden Week"
+      ],
+      "acceptedMeanings": [
+        "Golden Week holidays",
+        "Japanese Golden Week"
+      ],
+      "acceptedReadings": [
+        "ごーるでんうぃーく"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v042",
+      "japanese": "何",
+      "reading": "なに",
+      "meanings": [
+        "What"
+      ],
+      "acceptedMeanings": [
+        "which thing",
+        "what"
+      ],
+      "acceptedReadings": [
+        "なに"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v043",
+      "japanese": "行きます",
+      "reading": "いきます",
+      "meanings": [
+        "To go"
+      ],
+      "acceptedMeanings": [
+        "to go",
+        "to travel",
+        "to head to"
+      ],
+      "acceptedReadings": [
+        "いきます"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v044",
+      "japanese": "帰ります",
+      "reading": "かえります",
+      "meanings": [
+        "To return",
+        "Go home"
+      ],
+      "acceptedMeanings": [
+        "to go home",
+        "to return home",
+        "to come back"
+      ],
+      "acceptedReadings": [
+        "かえります"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v045",
+      "japanese": "飲みます",
+      "reading": "のみます",
+      "meanings": [
+        "To drink"
+      ],
+      "acceptedMeanings": [
+        "to drink",
+        "to have a drink"
+      ],
+      "acceptedReadings": [
+        "のみます"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v046",
+      "japanese": "食べます",
+      "reading": "たべます",
+      "meanings": [
+        "To eat"
+      ],
+      "acceptedMeanings": [
+        "to eat",
+        "to have a meal"
+      ],
+      "acceptedReadings": [
+        "たべます"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v047",
+      "japanese": "見ます",
+      "reading": "みます",
+      "meanings": [
+        "To see",
+        "Watch"
+      ],
+      "acceptedMeanings": [
+        "to see",
+        "to watch",
+        "to look at"
+      ],
+      "acceptedReadings": [
+        "みます"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v048",
+      "japanese": "します",
+      "reading": "します",
+      "meanings": [
+        "To do"
+      ],
+      "acceptedMeanings": [
+        "to do",
+        "to perform"
+      ],
+      "acceptedReadings": [
+        "します"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v049",
+      "japanese": "スキーをします",
+      "reading": "すきーをします",
+      "meanings": [
+        "To go skiing"
+      ],
+      "acceptedMeanings": [
+        "to ski",
+        "to go skiing"
+      ],
+      "acceptedReadings": [
+        "すきーをします"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v050",
+      "japanese": "いいですね",
+      "reading": "いいですね",
+      "meanings": [
+        "That sounds nice"
+      ],
+      "acceptedMeanings": [
+        "sounds good",
+        "that's nice",
+        "that's great",
+        "how nice"
+      ],
+      "acceptedReadings": [
+        "いいですね"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v051",
+      "japanese": "えっ",
+      "reading": "えっ",
+      "meanings": [
+        "Huh? (surprise)"
+      ],
+      "acceptedMeanings": [
+        "eh?",
+        "what?",
+        "huh?"
+      ],
+      "acceptedReadings": [
+        "えっ"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v052",
+      "japanese": "へえ",
+      "reading": "へえ",
+      "meanings": [
+        "Oh, really?"
+      ],
+      "acceptedMeanings": [
+        "oh, really?",
+        "really?",
+        "is that so?",
+        "I see"
+      ],
+      "acceptedReadings": [
+        "へえ"
+      ],
+      "category": "02 私（わたし）のスケジュール"
+    },
+    {
+      "id": "v053",
+      "japanese": "朝",
+      "reading": "あさ",
+      "meanings": [
+        "Morning"
+      ],
+      "acceptedMeanings": [
+        "morning",
+        "early morning"
+      ],
+      "acceptedReadings": [
+        "あさ"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v054",
+      "japanese": "夜",
+      "reading": "よる",
+      "meanings": [
+        "Night"
+      ],
+      "acceptedMeanings": [
+        "night",
+        "evening",
+        "nighttime"
+      ],
+      "acceptedReadings": [
+        "よる"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v055",
+      "japanese": "毎日",
+      "reading": "まいにち",
+      "meanings": [
+        "Every day"
+      ],
+      "acceptedMeanings": [
+        "daily",
+        "each day",
+        "every day"
+      ],
+      "acceptedReadings": [
+        "まいにち"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v056",
+      "japanese": "毎朝",
+      "reading": "まいあさ",
+      "meanings": [
+        "Every morning"
+      ],
+      "acceptedMeanings": [
+        "each morning",
+        "every morning"
+      ],
+      "acceptedReadings": [
+        "まいあさ"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v057",
+      "japanese": "毎晩",
+      "reading": "まいばん",
+      "meanings": [
+        "Every night"
+      ],
+      "acceptedMeanings": [
+        "each night",
+        "every night",
+        "nightly"
+      ],
+      "acceptedReadings": [
+        "まいばん"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v058",
+      "japanese": "朝ご飯",
+      "reading": "あさごはん",
+      "meanings": [
+        "Breakfast"
+      ],
+      "acceptedMeanings": [
+        "morning meal",
+        "breakfast"
+      ],
+      "acceptedReadings": [
+        "あさごはん"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v059",
+      "japanese": "昼ご飯",
+      "reading": "ひるごはん",
+      "meanings": [
+        "Lunch"
+      ],
+      "acceptedMeanings": [
+        "midday meal",
+        "lunch"
+      ],
+      "acceptedReadings": [
+        "ひるごはん"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v060",
+      "japanese": "うち",
+      "reading": "うち",
+      "meanings": [
+        "Home",
+        "House"
+      ],
+      "acceptedMeanings": [
+        "house",
+        "home",
+        "one's home"
+      ],
+      "acceptedReadings": [
+        "うち"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v061",
+      "japanese": "会社",
+      "reading": "かいしゃ",
+      "meanings": [
+        "Company",
+        "Workplace"
+      ],
+      "acceptedMeanings": [
+        "workplace",
+        "office",
+        "company"
+      ],
+      "acceptedReadings": [
+        "かいしゃ"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v062",
+      "japanese": "学校",
+      "reading": "がっこう",
+      "meanings": [
+        "School"
+      ],
+      "acceptedMeanings": [
+        "school",
+        "educational institution"
+      ],
+      "acceptedReadings": [
+        "がっこう"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v063",
+      "japanese": "コンビニ",
+      "reading": "こんびに",
+      "meanings": [
+        "Convenience store"
+      ],
+      "acceptedMeanings": [
+        "convenience shop",
+        "convenience store"
+      ],
+      "acceptedReadings": [
+        "こんびに"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v064",
+      "japanese": "牛乳",
+      "reading": "ぎゅうにゅう",
+      "meanings": [
+        "Milk"
+      ],
+      "acceptedMeanings": [
+        "cow's milk",
+        "milk"
+      ],
+      "acceptedReadings": [
+        "ぎゅうにゅう"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v065",
+      "japanese": "果物",
+      "reading": "くだもの",
+      "meanings": [
+        "Fruit"
+      ],
+      "acceptedMeanings": [
+        "fruit",
+        "fruits"
+      ],
+      "acceptedReadings": [
+        "くだもの"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v066",
+      "japanese": "サラダ",
+      "reading": "さらだ",
+      "meanings": [
+        "Salad"
+      ],
+      "acceptedMeanings": [
+        "salad"
+      ],
+      "acceptedReadings": [
+        "さらだ"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v067",
+      "japanese": "チーズ",
+      "reading": "ちーず",
+      "meanings": [
+        "Cheese"
+      ],
+      "acceptedMeanings": [
+        "cheese"
+      ],
+      "acceptedReadings": [
+        "ちーず"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v068",
+      "japanese": "インターネット",
+      "reading": "いんたーねっと",
+      "meanings": [
+        "Internet"
+      ],
+      "acceptedMeanings": [
+        "internet",
+        "the web",
+        "online"
+      ],
+      "acceptedReadings": [
+        "いんたーねっと"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v069",
+      "japanese": "新聞",
+      "reading": "しんぶん",
+      "meanings": [
+        "Newspaper"
+      ],
+      "acceptedMeanings": [
+        "newspaper",
+        "the paper"
+      ],
+      "acceptedReadings": [
+        "しんぶん"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v070",
+      "japanese": "テレビ",
+      "reading": "てれび",
+      "meanings": [
+        "Television"
+      ],
+      "acceptedMeanings": [
+        "TV",
+        "television"
+      ],
+      "acceptedReadings": [
+        "てれび"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v071",
+      "japanese": "CD",
+      "reading": "しーでぃー",
+      "meanings": [
+        "CD"
+      ],
+      "acceptedMeanings": [
+        "compact disc",
+        "compact disk"
+      ],
+      "acceptedReadings": [
+        "しーでぃー",
+        "CD",
+        "cd"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v072",
+      "japanese": "DVD",
+      "reading": "でぃーぶいでぃー",
+      "meanings": [
+        "DVD"
+      ],
+      "acceptedMeanings": [
+        "digital video disc",
+        "digital versatile disc"
+      ],
+      "acceptedReadings": [
+        "でぃーぶいでぃー",
+        "DVD",
+        "dvd"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v073",
+      "japanese": "何も",
+      "reading": "なにも",
+      "meanings": [
+        "Anything",
+        "Nothing (with negative verb)"
+      ],
+      "acceptedMeanings": [
+        "nothing",
+        "not anything",
+        "anything (with a negative verb)",
+        "nothing at all"
+      ],
+      "acceptedReadings": [
+        "なにも"
+      ],
+      "category": "03 どんな毎日（まいにち）？",
+      "notes": "This meaning is used with a negative verb."
+    },
+    {
+      "id": "v074",
+      "japanese": "どこ(へ)も",
+      "reading": "どこも",
+      "meanings": [
+        "Anywhere",
+        "Nowhere (with negative verb)"
+      ],
+      "acceptedMeanings": [
+        "nowhere",
+        "not anywhere",
+        "anywhere (with a negative verb)",
+        "nowhere at all"
+      ],
+      "acceptedReadings": [
+        "どこも",
+        "どこへも"
+      ],
+      "category": "03 どんな毎日（まいにち）？",
+      "notes": "This meaning is used with a negative verb."
+    },
+    {
+      "id": "v075",
+      "japanese": "買います",
+      "reading": "かいます",
+      "meanings": [
+        "To buy"
+      ],
+      "acceptedMeanings": [
+        "to buy",
+        "to purchase"
+      ],
+      "acceptedReadings": [
+        "かいます"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v076",
+      "japanese": "聞きます",
+      "reading": "ききます",
+      "meanings": [
+        "To listen",
+        "Hear"
+      ],
+      "acceptedMeanings": [
+        "to listen",
+        "to hear",
+        "to listen to"
+      ],
+      "acceptedReadings": [
+        "ききます"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v077",
+      "japanese": "CDを聞きます",
+      "reading": "しーでぃーをききます",
+      "meanings": [
+        "To listen to a CD"
+      ],
+      "acceptedMeanings": [
+        "to listen to a CD",
+        "to play a CD"
+      ],
+      "acceptedReadings": [
+        "しーでぃーをききます",
+        "CDを聞きます",
+        "cdを聞きます"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v078",
+      "japanese": "働きます",
+      "reading": "はたらきます",
+      "meanings": [
+        "To work"
+      ],
+      "acceptedMeanings": [
+        "to work",
+        "to be employed",
+        "to labor"
+      ],
+      "acceptedReadings": [
+        "はたらきます"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v079",
+      "japanese": "読みます",
+      "reading": "よみます",
+      "meanings": [
+        "To read"
+      ],
+      "acceptedMeanings": [
+        "to read",
+        "to read through"
+      ],
+      "acceptedReadings": [
+        "よみます"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v080",
+      "japanese": "起きます",
+      "reading": "おきます",
+      "meanings": [
+        "To wake up"
+      ],
+      "acceptedMeanings": [
+        "to wake up",
+        "to get up"
+      ],
+      "acceptedReadings": [
+        "おきます"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v081",
+      "japanese": "寝ます",
+      "reading": "ねます",
+      "meanings": [
+        "To sleep",
+        "Go to bed"
+      ],
+      "acceptedMeanings": [
+        "to sleep",
+        "to go to bed"
+      ],
+      "acceptedReadings": [
+        "ねます"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v082",
+      "japanese": "勉強します",
+      "reading": "べんきょうします",
+      "meanings": [
+        "To study"
+      ],
+      "acceptedMeanings": [
+        "to study",
+        "to learn"
+      ],
+      "acceptedReadings": [
+        "べんきょうします"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    },
+    {
+      "id": "v083",
+      "japanese": "来ます",
+      "reading": "きます",
+      "meanings": [
+        "To come"
+      ],
+      "acceptedMeanings": [
+        "to come",
+        "to arrive",
+        "to get here"
+      ],
+      "acceptedReadings": [
+        "きます"
+      ],
+      "category": "03 どんな毎日（まいにち）？"
+    }
+  ],
+  "kanji": []
+}

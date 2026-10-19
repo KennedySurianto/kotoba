@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { StudySession } from "@/components/study/study-session";
 import { getChapters } from "@/lib/chapters/loader";
 import { japaneseInputCandidates, studyItems } from "@/lib/study/types";
@@ -15,5 +15,6 @@ export default async function StudyPage({ params }: { params: Promise<{ chapterI
   const chapters = await getChapters();
   const chapter = chapters.find((item) => item.id === chapterId);
   if (!chapter) notFound();
+  if (subject === "kanji" && chapter.kanji.length === 0) redirect(`/chapter/${chapter.id}`);
   return <StudySession chapterId={chapter.id} chapterTitle={chapter.title} subject={subject} mode={mode} initialItems={studyItems(chapter, subject)} japaneseCandidates={japaneseInputCandidates(chapters)} />;
 }

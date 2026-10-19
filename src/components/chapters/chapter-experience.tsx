@@ -11,7 +11,9 @@ export function ChapterExperience({ chapter }: { chapter: Chapter }) {
     <div className="chapter-divider"><span>CHOOSE A PATH</span><span>{String(chapter.vocabulary.length).padStart(2, "0")} WORDS <i>·</i> {String(chapter.kanji.length).padStart(2, "0")} KANJI</span></div>
     <div className="subject-grid">
       <Link className="subject-card" href={`/chapter/${chapter.id}/vocabulary`}><span className="subject-count">01 / WORDS</span><span className="subject-jp">ことば</span><h2>Vocabulary</h2><p>Build familiarity with the words that make everyday Japanese.</p><span className="subject-card-bottom"><span><BookOpen size={15} /> {chapter.vocabulary.length} entries</span><span className="circle-arrow"><ArrowUpRight size={18} /></span></span></Link>
-      <Link className="subject-card subject-card-ink" href={`/chapter/${chapter.id}/kanji`}><span className="subject-count">02 / CHARACTERS</span><span className="subject-jp">漢字</span><h2>Kanji</h2><p>Meet each character through its meanings, readings, and words.</p><span className="subject-card-bottom"><span><Layers3 size={15} /> {chapter.kanji.length} characters</span><span className="circle-arrow"><ArrowUpRight size={18} /></span></span></Link>
+      {chapter.kanji.length > 0
+        ? <Link className="subject-card subject-card-ink" href={`/chapter/${chapter.id}/kanji`}><span className="subject-count">02 / CHARACTERS</span><span className="subject-jp">漢字</span><h2>Kanji</h2><p>Meet each character through its meanings, readings, and words.</p><span className="subject-card-bottom"><span><Layers3 size={15} /> {chapter.kanji.length} characters</span><span className="circle-arrow"><ArrowUpRight size={18} /></span></span></Link>
+        : <div className="subject-card subject-card-ink subject-card-disabled" aria-disabled="true"><span className="subject-count">02 / CHARACTERS</span><span className="subject-jp">漢字</span><h2>Kanji</h2><p>No kanji are available in this chapter yet.</p><span className="subject-card-bottom"><span><Layers3 size={15} /> Coming soon</span></span></div>}
     </div>
     <Link className="back-link" href="/"><ArrowLeft size={14} /> Back to all chapters</Link>
   </main>;
