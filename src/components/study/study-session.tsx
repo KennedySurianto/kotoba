@@ -17,8 +17,11 @@ type VocabularyQuizDirection = "japanese-to-english" | "english-to-japanese";
 type JapaneseInputMode = "hiragana" | "katakana" | "kanji";
 
 function convertJapaneseInput(value: string, mode: JapaneseInputMode) {
-  const hiragana = toHiragana(value, { IMEMode: "toHiragana" });
-  return mode === "katakana" ? toKatakana(hiragana) : hiragana;
+  const hasPendingN = /n$/i.test(value) && !/nn$/i.test(value);
+  const pendingN = hasPendingN ? value.slice(-1) : "";
+  const converted = toHiragana(hasPendingN ? value.slice(0, -1) : value, { IMEMode: "toHiragana" });
+  const script = mode === "katakana" ? toKatakana(converted) : converted;
+  return script + pendingN;
 }
 
 function createQuizRunId() {
