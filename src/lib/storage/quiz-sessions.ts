@@ -43,7 +43,11 @@ export function getQuizSession(href: string) {
 }
 
 export function getLatestQuizSession() {
-  return Object.values(readSessions()).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0] ?? null;
+  return getQuizSessions()[0] ?? null;
+}
+
+export function getQuizSessions() {
+  return Object.values(readSessions()).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
 export function saveQuizSession(session: SavedQuizSession) {
